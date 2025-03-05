@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 26
-  productGUID: 6b27691867bb043a09f9d6458f76a0d0
+  productGUID: 636073e3f124340c39c87050134a6e54
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: daydream-6000
+  productName: daydream6000
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -677,14 +677,14 @@ PlayerSettings:
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: daydream-6000
+  metroPackageName: daydream6000
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: daydream-6000
+  metroApplicationDescription: daydream6000
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -754,10 +754,10 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 424202ea-6f09-4ebb-8142-deee87eeb0da
+  cloudProjectId: 83e23d9f-cf0c-4d96-812b-464138bd48e9
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: daydream-6000
+  projectName: daydream6000
   organizationId: chenjanet
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
