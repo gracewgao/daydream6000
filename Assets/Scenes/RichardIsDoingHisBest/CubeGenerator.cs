@@ -12,6 +12,7 @@ public class CubeGenerator : MonoBehaviour
     public Material Mat2;
     public Material Mat3;
     public Material Mat4;
+    public Material FloorMat;
 
     void Start()
     {
@@ -50,8 +51,9 @@ public class CubeGenerator : MonoBehaviour
         } else if (label == "Left") {
             wall.transform.localScale = new Vector3(roomWidth / 10, 1, roomHeight / 10);
             wall.GetComponent<Renderer>().material = Mat4;
-        } else { // Floor & Ceiling
+        } else { // Floor
             wall.transform.localScale = new Vector3(roomLength / 10, 1, roomWidth / 10);
+            wall.GetComponent<Renderer>().material = FloorMat;
         }
 
         if (label == "Floor") {
