@@ -24,11 +24,10 @@ public class CubeGenerator : MonoBehaviour
 
         // Create walls and floor (without cameras)
         CreateWall(new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0), new Vector3(0, roomHeight, 0), displayPort: 4, "Floor");  
-        // CreateWall(new Vector3(0, roomHeight, 0), Quaternion.Euler(180, 0, 0), "Ceiling"); 
         CreateWall(new Vector3(0, roomHeight / 2, roomWidth / 2), Quaternion.Euler(-90, 0, 0), new Vector3(0, roomHeight / 2, 0), displayPort: 0, "Front");  
         CreateWall(new Vector3(0, roomHeight / 2, -roomWidth / 2), Quaternion.Euler(90, 0, 0), new Vector3(0, roomHeight / 2, 0), displayPort: 1, "Back"); 
         CreateWall(new Vector3(roomLength / 2, roomHeight / 2, 0), Quaternion.Euler(-90, 90, 0), new Vector3(0, roomHeight / 2, 0), displayPort: 2, "Right"); 
-        CreateWall(new Vector3(-roomLength / 2, roomHeight / 2, 0), Quaternion.Euler(-90, -90, 0), new Vector3(0, roomHeight / 2, 0), displayPort: 3, "Left"); 
+        CreateWall(new Vector3(-roomLength / 2, roomHeight / 2, 0), Quaternion.Euler(-90, -90, 0), new Vector3(0, roomHeight / 2, 0), displayPort: 3, "Left");
     }
 
     void CreateWall(Vector3 position, Quaternion rotation, Vector3 camPosition, int displayPort, string label, Rect? customViewPort = null)
