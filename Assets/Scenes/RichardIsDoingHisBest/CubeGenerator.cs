@@ -8,6 +8,11 @@ public class CubeGenerator : MonoBehaviour
 
     public bool renderRoom = false;
 
+    public Material Mat1;
+    public Material Mat2;
+    public Material Mat3;
+    public Material Mat4;
+
     void Start()
     {
         // Activate all available displays (not needed for room rendering but kept for future projection setup)
@@ -16,18 +21,16 @@ public class CubeGenerator : MonoBehaviour
             Display.displays[i].Activate();
         }
 
-        float camDist = 0.5f;
-
         // Create walls and floor (without cameras)
-        CreateWall(new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0), Color.cyan, new Vector3(0, roomHeight, 0), displayPort: 2, "Floor");  
-        // CreateWall(new Vector3(0, roomHeight, 0), Quaternion.Euler(180, 0, 0), Color.magenta, "Ceiling"); 
-        CreateWall(new Vector3(0, roomHeight / 2, roomWidth / 2), Quaternion.Euler(-90, 0, 0), Color.red, new Vector3(0, roomHeight, 0), displayPort: 0, "Front");  
-        CreateWall(new Vector3(0, roomHeight / 2, -roomWidth / 2), Quaternion.Euler(90, 0, 0), Color.green, new Vector3(0, roomHeight, 0), displayPort: 0, "Back", customViewPort: new Rect(0, 0.5f, 1, 0.5f)); 
-        CreateWall(new Vector3(roomLength / 2, roomHeight / 2, 0), Quaternion.Euler(-90, 90, 0), Color.blue, new Vector3(0, roomHeight, 0), displayPort: 1, "Right"); 
-        CreateWall(new Vector3(-roomLength / 2, roomHeight / 2, 0), Quaternion.Euler(-90, -90, 0), Color.yellow, new Vector3(0, roomHeight, 0), displayPort: 1, "Left", customViewPort: new Rect(0, 0.5f, 1, 0.5f)); 
+        CreateWall(new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0), new Vector3(0, roomHeight, 0), displayPort: 4, "Floor");  
+        // CreateWall(new Vector3(0, roomHeight, 0), Quaternion.Euler(180, 0, 0), "Ceiling"); 
+        CreateWall(new Vector3(0, roomHeight / 2, roomWidth / 2), Quaternion.Euler(-90, 0, 0), new Vector3(0, roomHeight / 2, 0), displayPort: 0, "Front");  
+        CreateWall(new Vector3(0, roomHeight / 2, -roomWidth / 2), Quaternion.Euler(90, 0, 0), new Vector3(0, roomHeight / 2, 0), displayPort: 1, "Back"); 
+        CreateWall(new Vector3(roomLength / 2, roomHeight / 2, 0), Quaternion.Euler(-90, 90, 0), new Vector3(0, roomHeight / 2, 0), displayPort: 2, "Right"); 
+        CreateWall(new Vector3(-roomLength / 2, roomHeight / 2, 0), Quaternion.Euler(-90, -90, 0), new Vector3(0, roomHeight / 2, 0), displayPort: 3, "Left"); 
     }
 
-    void CreateWall(Vector3 position, Quaternion rotation, Color color, Vector3 camPosition, int displayPort, string label, Rect? customViewPort = null)
+    void CreateWall(Vector3 position, Quaternion rotation, Vector3 camPosition, int displayPort, string label, Rect? customViewPort = null)
     {
         GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Plane);
         wall.transform.position = position;
@@ -35,15 +38,21 @@ public class CubeGenerator : MonoBehaviour
         wall.name = label;  // Naming for debugging
 
         // Scale based on wall type
-        if (label == "Front" || label == "Back")
+        if (label == "Front") {
             wall.transform.localScale = new Vector3(roomLength / 10, 1, roomHeight / 10);
-        else if (label == "Right" || label == "Left")
+            wall.GetComponent<Renderer>().material = Mat1;
+        } else if (label == "Back") {
+            wall.transform.localScale = new Vector3(roomLength / 10, 1, roomHeight / 10);
+            wall.GetComponent<Renderer>().material = Mat3;
+        } else if (label == "Right") {
             wall.transform.localScale = new Vector3(roomWidth / 10, 1, roomHeight / 10);
-        else // Floor & Ceiling
+            wall.GetComponent<Renderer>().material = Mat2;
+        } else if (label == "Left") {
+            wall.transform.localScale = new Vector3(roomWidth / 10, 1, roomHeight / 10);
+            wall.GetComponent<Renderer>().material = Mat4;
+        } else { // Floor & Ceiling
             wall.transform.localScale = new Vector3(roomLength / 10, 1, roomWidth / 10);
-
-        // Assign color
-        wall.GetComponent<Renderer>().material.color = color;
+        }
 
         if (label == "Floor") {
             int resolutionWidth = 3690;
