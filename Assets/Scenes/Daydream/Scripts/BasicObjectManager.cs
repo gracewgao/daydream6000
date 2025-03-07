@@ -4,6 +4,20 @@ using UnityEngine;
 using UnityEngine.VFX;
 using System;
 
+public class TrackedObjectData
+{
+    public Vector3 Position;        // last known position
+    public float StationaryTime;    // how long it's been still
+    public bool MaterialSet;        // whether material has alreday been set
+
+    public TrackedObjectData(Vector3 position, float stationaryTime = 0f, bool materialSet = false)
+    {
+        Position = position;
+        StationaryTime = stationaryTime;
+        MaterialSet = materialSet;
+    }
+}
+
 public class BasicObjectManager : MonoBehaviour
 {
     public AugmentaManager augmentaManager; // augmentaManager reference
@@ -11,22 +25,22 @@ public class BasicObjectManager : MonoBehaviour
     public Mesh mesh;
     public Material objectMaterial;
 
-    private Dictionary<int, Tuple<Vector3, float>> positions = new Dictionary<int, Tuple<Vector3, float>>();
+    private Dictionary<int, TrackedObjectData> positions = new Dictionary<int, TrackedObjectData>();
     private Dictionary<int, GameObject> objects = new Dictionary<int, GameObject>();
 
-    public string meshFolderPath = "Meshes";
-    private List<Mesh> availableMeshes = new List<Mesh>();
+    public string materialFolderPath = "Materials";
+    private List<Material> availableMeshes = new List<Material>();
 
     void LoadMeshesFromFolder()
     {
-        Mesh[] meshes = Resources.LoadAll<Mesh>(meshFolderPath);
+        Material[] meshes = Resources.LoadAll<Material>(materialFolderPath);
         if (meshes.Length == 0)
         {
-            Debug.LogError("no meshes found in Assets/Resources/" + meshFolderPath);
+            Debug.LogError("no materials found in Assets/Resources/" + materialFolderPath);
             return;
         }
 
-        availableMeshes = new List<Mesh>(meshes);
+        availableMeshes = new List<Material>(meshes);
     }
 
     private void OnEnable()
@@ -41,7 +55,7 @@ public class BasicObjectManager : MonoBehaviour
         augmentaManager.augmentaObjectLeave -= OnAugmentaObjectLeave;
     }
 
-    public static bool ApproximatelyEqual(Vector3 a, Vector3 b, float tolerance = 0.1f)
+    public static bool ApproximatelyEqual(Vector3 a, Vector3 b, float tolerance = 0.5f)
     {
         return Mathf.Abs(a.x - b.x) <= tolerance &&
                Mathf.Abs(a.y - b.y) <= tolerance &&
@@ -58,44 +72,53 @@ public class BasicObjectManager : MonoBehaviour
         foreach (var item in objects)
         {
             GameObject obj = item.Value;
-            obj.transform.Rotate(10 * Time.deltaTime, 10 * Time.deltaTime, 10 * Time.deltaTime);
+
+            obj.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+            
+            float swayAmount = Mathf.Sin(Time.time * 2f) * 20f; // 20 degrees sway at 2 Hz
+            obj.transform.Rotate(swayAmount * Time.deltaTime, swayAmount * Time.deltaTime, swayAmount * Time.deltaTime);
         }
 
         List<int> keys = new List<int>(positions.Keys);
         foreach (int key in keys)
         {
-            Tuple<Vector3, float> value = positions[key];
-            // todo: be more generous with changes
-            // Debug.Log(key + " with value.Item1: " + value.Item1 + " and value.Item2: " + value.Item2 + " and object position is " + objects[key].transform.position);
-            if (ApproximatelyEqual(value.Item1, objects[key].transform.position))
+            TrackedObjectData value = positions[key];
+            if (ApproximatelyEqual(value.Position, objects[key].transform.position))
             {
-                if (value.Item2 < 0)
+                GameObject obj = objects[key];
+                positions[key] = new TrackedObjectData(value.Position, value.StationaryTime + Time.deltaTime, value.MaterialSet);
+
+                if (value.StationaryTime > 1f && !value.MaterialSet) // change mesh if standing more than 1 second
                 {
-                    continue; // skip if mesh already updated
-                }
-                if (value.Item2 > 5f)
-                {
-                    MeshFilter meshFilter = objects[key].GetComponent<MeshFilter>();
-                    if (meshFilter != null)
+                    Renderer renderer = objects[key].GetComponent<Renderer>();
+                    if (renderer != null)
                     {
-                        Mesh randomMesh = availableMeshes[UnityEngine.Random.Range(0, availableMeshes.Count)];
-                        meshFilter.mesh = randomMesh;
+                        Material randomMaterial = availableMeshes[UnityEngine.Random.Range(0, availableMeshes.Count)];
+                        renderer.material = randomMaterial;
                     }
-                    positions[key] = new Tuple<Vector3, float>(value.Item1, -1);    // flag to indicate mesh has already been generated
+                    positions[key] = new TrackedObjectData(value.Position, value.StationaryTime, true);    // flag to indicate mesh has already been generated
                 }
-                else
+
+                if (value.StationaryTime <= 3f)  // growing
                 {
-                    positions[key] = new Tuple<Vector3, float>(value.Item1, value.Item2 + Time.deltaTime);
+                    float t = value.StationaryTime / 3f;
+                    float scale = Mathf.Lerp(0.8f, 1.5f, t);
+                    obj.transform.localScale = new Vector3(scale, scale, scale);
                 }
             }
             else
             {
-                positions[key] = new Tuple<Vector3, float>(objects[key].transform.position, 0f);
-                MeshFilter meshFilter = objects[key].GetComponent<MeshFilter>();
-                if (meshFilter != null)
+                GameObject obj = objects[key];
+
+                positions[key] = new TrackedObjectData(obj.transform.position, 0f, false); // reset timer
+
+                Renderer renderer = obj.GetComponent<Renderer>();
+                if (renderer != null)
                 {
-                    meshFilter.mesh = mesh; // set to sphere when walking
+                    renderer.material = objectMaterial;     // sphere material
                 }
+
+                obj.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             }
         }
     }
@@ -131,7 +154,7 @@ public class BasicObjectManager : MonoBehaviour
 
         if (!positions.ContainsKey(augmentaObject.oid))
         {
-            positions.Add(augmentaObject.oid, new Tuple<Vector3, float>(currentPosition, 0f));
+            positions.Add(augmentaObject.oid, new TrackedObjectData(currentPosition, 0f, false));
         }
 
         GameObject gameObject = objects[augmentaObject.oid];

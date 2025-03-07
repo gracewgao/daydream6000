@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 262.28348, g: 324.9705, b: 430.11627, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -250,11 +250,11 @@ PrefabInstance:
     - target: {fileID: 4199229040050520677, guid: 84128a6e2f2fb4ef7b3f39eba6f6346f, type: 3}
       propertyPath: mesh
       value: 
-      objectReference: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+      objectReference: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
     - target: {fileID: 4199229040050520677, guid: 84128a6e2f2fb4ef7b3f39eba6f6346f, type: 3}
       propertyPath: objectMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 3c2c5b313ec1c451baa6833d0c119c22, type: 2}
+      objectReference: {fileID: 2100000, guid: 5a1a318cd45e64d02959d833657b2737, type: 2}
     - target: {fileID: 4199229040050520677, guid: 84128a6e2f2fb4ef7b3f39eba6f6346f, type: 3}
       propertyPath: augmentaManager
       value: 
