@@ -2,18 +2,20 @@ Shader "Custom/CloudShader"
 {
     Properties
     {
-        _SDFTex ("SDF Texture", 3D) = "white" {}
-        _MainTex ("Texture", 2D) = "white" {}
-        _BlueNoise ("Blue Noise Texture", 2D) = "white" {}
-        _NoiseScale ("Noise Scale", Float) = 1.0
-        _CloudDensity ("Cloud Density", Range(0, 2)) = 1.0
-        _FadeStart ("Fade Start", Range(0.0, 1.0)) = 0.3
-        _FadeEnd ("Fade End", Range(0.0, 1.0)) = 0.5
-        [Toggle]_DebugSDF ("Debug SDF", Integer) = 0
-        _SDFStrength ("SDF Strength", Range(1, 5)) = 3.0
-        _NoiseStrength ("Noise Strength", Range(0, 1)) = 0.3
-        _CloudSpeed ("Cloud Speed", Range(0, 2)) = 0.5
-        _SunDirection ("Sun Direction", Vector) = (1,0,0)
+        _SDFTex ("SDF Texture", 3D) = "white" {}                // defines the shape of the cloud
+        _BlueNoise ("Blue Noise Texture", 2D) = "white" {}      // defines the dithering pattern
+        _NoiseScale ("Noise Scale", Float) = 1.0                // scales the noise pattern
+        _CloudDensity ("Cloud Density", Range(0, 2)) = 1.0      // controls the density of the cloud
+        _FadeStart ("Fade Start", Range(0.0, 1.0)) = 0.3        // start of the fade
+        [Toggle]_DebugSDF ("Debug SDF", Integer) = 0            // enables debug mode for the SDF
+        _SDFStrength ("SDF Strength", Range(1, 5)) = 3.0        // controls how closely the shape of the cloud follows the shape of the SDF
+        _NoiseStrength ("Noise Strength", Range(0, 1)) = 0.3    // controls noise strength
+        _NoiseGain ("Noise Gain", Range(0, 1)) = 0.612          // controls noise gain
+        _NoiseLacunarity ("Noise Lacunarity", Range(1, 5)) = 2.920
+        _NoiseBias ("Noise Bias", Range(0.5, 3.0)) = 0.7
+        _NoiseRange ("Noise Range", Range(0.5, 5.0)) = 1.0
+        _CloudSpeed ("Cloud Speed", Range(0, 5)) = 0.5          // controls speed of cloud animation
+        _SunDirection ("Sun Direction", Vector) = (1,0,0)       // controls direction of sun (as a unit vector in absolute world coordinates)
     }
     
     SubShader
@@ -31,7 +33,6 @@ Shader "Custom/CloudShader"
             #pragma fragment frag
             
             #include "UnityCG.cginc"
-            #include "UnityLightingCommon.cginc"
             
             struct appdata
             {
@@ -50,9 +51,6 @@ Shader "Custom/CloudShader"
             };
 
             UNITY_DECLARE_SCREENSPACE_TEXTURE(_CameraOpaqueTexture);
-            
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
 
             sampler2D _BlueNoise;
 
@@ -62,10 +60,14 @@ Shader "Custom/CloudShader"
             float _CloudDensity;
 
             float _FadeStart;
-            float _FadeEnd;
 
             float _SDFStrength;
+
             float _NoiseStrength;
+            float _NoiseGain;
+            float _NoiseLacunarity;
+            float _NoiseBias;
+            float _NoiseRange;
 
             float _CloudSpeed;
             bool _DebugSDF;
@@ -74,7 +76,6 @@ Shader "Custom/CloudShader"
             
             #define MAX_STEPS 100
             #define MARCH_SIZE 0.1
-            #define SUN_POSITION float3(1.0, 0.0, 0.0)
             
             float sampleSDF(float3 p) {
                 float3 uv = p + 0.5;
@@ -107,24 +108,31 @@ Shader "Custom/CloudShader"
                         f.y
                     ),
                     f.z
-                ) * 2.0 - 1.0;
+                ) * 2.0 * _NoiseRange - _NoiseRange + _NoiseBias; // apply custom range and bias to noise
+            }
+
+            float3 getNoiseAnimationDirection() {
+                float3 viewDir = normalize(_WorldSpaceCameraPos - unity_ObjectToWorld[3].xyz);
+                float3 up = abs(viewDir.y) < 0.999 ? float3(0,1,0) : float3(1,0,0);
+                return normalize(cross(viewDir, up));
             }
 
             float fbm(float3 p) {
-                float3 q = p + _Time.y * _CloudSpeed * float3(1.0, -0.2, -1.0);
+                float3 noiseAnimationDirection = getNoiseAnimationDirection();
+                float3 q = p + _Time.x * _CloudSpeed * noiseAnimationDirection;
 
                 float f = 0.0;
-                float scale = 0.5;
-                float factor = 2.02;
+                float amplitude = 0.5;
+                float frequency = 1.0;
+                int octaves = 6;
 
-                for (int i = 0; i < 6; i++) {
-                    f += scale * noise(q * _NoiseScale);
-                    q *= factor;
-                    factor += 0.21;
-                    scale *= 0.5;
+                for (int i = 0; i < octaves; i++) {
+                    f += amplitude * noise(q * _NoiseScale * frequency);
+                    frequency *= _NoiseLacunarity;
+                    amplitude *= _NoiseGain;
                 }
 
-              return f;
+              return clamp(f, -10.0, 10.0);
             }
 
             float scene(float3 p)
@@ -132,16 +140,13 @@ Shader "Custom/CloudShader"
                 float distance = sampleSDF(p);
                 float f = fbm(p);
 
-                float len = length(p);
-                float falloff = 1.0 - smoothstep(_FadeStart, _FadeEnd, len * len); 
-
+                float falloff = 1.0 - smoothstep(_FadeStart, 1.0, length(p));
                 float baseShape = -distance * _SDFStrength;
-                float noise = f * _NoiseStrength;
-    
-                float blend = smoothstep(-0.15, 0.25, baseShape);
-                float cloudShape = baseShape + noise * blend;
 
-                cloudShape += pow(noise, 2.0) * 0.2;
+                float noise = (f - _NoiseBias) * _NoiseStrength;
+                float blend = smoothstep(-0.15, 0.25, baseShape);
+                
+                float cloudShape = max(0.0, baseShape + noise * blend);
 
                 return cloudShape * _CloudDensity * falloff;
             }
@@ -178,15 +183,13 @@ Shader "Custom/CloudShader"
                     
                     if (density > 0.0)
                     {
-
                         float diffuse = clamp((scene(p) - scene(p + 0.3 * sunDirection)) / 0.3, 0.0, 1.0);
                         float3 lin = float3(0.60, 0.60, 0.75) * 1.1 + 0.8 * float3(1.0, 0.6, 0.3) * diffuse;
-                        float4 color = float4(lerp(float3(1.0, 1.0, 1.0), float3(0.0, 0.0, 0.0), density), density);
+                        float visualDensity = 1.0 - pow(1.0 - min(density, 1.0), 0.5); // Compress the density curve
+                        float4 color = float4(lerp(float3(1.0, 1.0, 1.0), float3(0.5, 0.5, 0.5), visualDensity), density);
                         color.rgb *= lin;
                         color.rgb *= color.a;
-
-                        float transmittance = 1.0 - res.a;
-                        res += color * transmittance;
+                        res += color * (1.0 - res.a);
                     }
                     
                     depth += MARCH_SIZE;
@@ -200,7 +203,6 @@ Shader "Custom/CloudShader"
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.screenPos = ComputeScreenPos(o.vertex);
                 o.grabPos = ComputeGrabScreenPos(o.vertex);
 
