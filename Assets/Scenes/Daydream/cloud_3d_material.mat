@@ -24,7 +24,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: cloud_3d_material
-  m_Shader: {fileID: 4800000, guid: 6c87bc93418104485a65aa49f83ffaf1, type: 3}
+  m_Shader: {fileID: 4800000, guid: 653d3905a8e7d4bc48cda742d0a595d5, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -216,6 +216,10 @@ Material:
     - _Metallic: 0
     - _MetallicRemapMax: 1
     - _MetallicRemapMin: 0
+    - _NoiseBias: 0.7
+    - _NoiseGain: 0.612
+    - _NoiseLacunarity: 2.92
+    - _NoiseRange: 1
     - _NoiseScale: 1
     - _NoiseStrength: 0.3
     - _NormalMapSpace: 0
