@@ -153,7 +153,7 @@ Material:
     - _AlphaSrcBlend: 1
     - _Anisotropy: 0
     - _BlendMode: 0
-    - _CloudDensity: 1.6
+    - _CloudDensity: 1.29
     - _CloudSpeed: 0.5
     - _CoatMask: 0
     - _CullMode: 2
@@ -181,7 +181,7 @@ Material:
     - _EnableFogOnTransparent: 1
     - _EnableGeometricSpecularAA: 0
     - _EnergyConservingSpecularColor: 1
-    - _FadeStart: 0.3
+    - _FadeStart: 0.9
     - _HeightAmplitude: 0.02
     - _HeightCenter: 0.5
     - _HeightMapParametrization: 0
@@ -201,11 +201,11 @@ Material:
     - _MetallicRemapMax: 1
     - _MetallicRemapMin: 0
     - _NoiseBias: 0.7
-    - _NoiseGain: 0.713
-    - _NoiseLacunarity: 2.92
+    - _NoiseGain: 0.34
+    - _NoiseLacunarity: 2.55
     - _NoiseRange: 1
     - _NoiseScale: 1
-    - _NoiseStrength: 0.184
+    - _NoiseStrength: 0.223
     - _NormalMapSpace: 0
     - _NormalScale: 1
     - _ObjectSpaceUVMapping: 0
