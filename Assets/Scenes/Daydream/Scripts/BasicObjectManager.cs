@@ -31,6 +31,8 @@ public class BasicObjectManager : MonoBehaviour
     public string materialFolderPath = "Materials";
     private List<Material> availableMeshes = new List<Material>();
 
+    private float HEIGHT = 250f;
+
     void LoadMeshesFromFolder()
     {
         Material[] meshes = Resources.LoadAll<Material>(materialFolderPath);
@@ -131,7 +133,7 @@ public class BasicObjectManager : MonoBehaviour
 
         Vector3 currentPosition = new Vector3(
             augmentaObject.worldPosition3D.x,
-            augmentaObject.worldPosition3D.y - 2f,
+            augmentaObject.worldPosition3D.y + HEIGHT - 1f,
             augmentaObject.worldPosition3D.z
         );
 

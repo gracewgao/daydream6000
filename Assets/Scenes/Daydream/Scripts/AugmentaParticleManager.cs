@@ -12,6 +12,7 @@ public class AugmentaParticleManager : MonoBehaviour
     private Dictionary<int, GameObject> particleSystems = new Dictionary<int, GameObject>();
     private Dictionary<int, Vector3> previousPositions = new Dictionary<int, Vector3>();
 
+    private float HEIGHT = 250f;
 
     private void OnEnable()
     {
@@ -34,7 +35,7 @@ public class AugmentaParticleManager : MonoBehaviour
         // Vector3 currentPosition = augmentaObject.worldPosition3D;
         Vector3 currentPosition = new Vector3(
             augmentaObject.worldPosition3D.x, 
-            augmentaObject.worldPosition2D.y - 1f,
+            augmentaObject.worldPosition2D.y + HEIGHT,
             augmentaObject.worldPosition2D.z
         );
 

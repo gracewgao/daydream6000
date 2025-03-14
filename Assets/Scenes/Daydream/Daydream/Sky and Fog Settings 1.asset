@@ -59,7 +59,7 @@ MonoBehaviour:
   active: 1
   enable:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   cloudTiling:
     m_OverrideState: 0
     m_Value: {x: 1, y: 1}
@@ -71,7 +71,7 @@ MonoBehaviour:
     m_Value: 0.1
   altitudeRange:
     m_OverrideState: 1
-    m_Value: 1000
+    m_Value: 300
   fadeInMode:
     m_OverrideState: 0
     m_Value: 0
@@ -248,7 +248,7 @@ MonoBehaviour:
     m_Value: 0.5
   densityMultiplier:
     m_OverrideState: 1
-    m_Value: 0.499
+    m_Value: 0.8
   shapeFactor:
     m_OverrideState: 1
     m_Value: 0.344
@@ -260,7 +260,7 @@ MonoBehaviour:
     m_Value: {x: 0, y: 0, z: 0}
   erosionFactor:
     m_OverrideState: 1
-    m_Value: 0.125
+    m_Value: 1
   erosionScale:
     m_OverrideState: 1
     m_Value: 107
@@ -378,7 +378,7 @@ MonoBehaviour:
     m_Value: 1
   enabled:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   colorMode:
     m_OverrideState: 0
     m_Value: 1
@@ -405,7 +405,7 @@ MonoBehaviour:
     m_Value: -10
   maximumHeight:
     m_OverrideState: 1
-    m_Value: 100
+    m_Value: 250
   meanFreePath:
     m_OverrideState: 1
     m_Value: 3
