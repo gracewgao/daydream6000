@@ -133,7 +133,7 @@ public class BasicObjectManager : MonoBehaviour
 
         Vector3 currentPosition = new Vector3(
             augmentaObject.worldPosition3D.x,
-            augmentaObject.worldPosition3D.y + HEIGHT - 1f,
+            augmentaObject.worldPosition3D.y + HEIGHT - 2f,
             augmentaObject.worldPosition3D.z
         );
 
