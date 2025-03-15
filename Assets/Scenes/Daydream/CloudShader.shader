@@ -218,13 +218,20 @@ Shader "Custom/CloudShader"
                 float3 rd = normalize(i.objectPos - ro);
 
                 float timeOffset = frac(_Time.y * 60);
-                float blueNoise = tex2D(_BlueNoise, i.vertex.xy / 1024.0).r;
+                float blueNoise = tex2D(_BlueNoise, i.screenPos.xy / i.screenPos.w * _ScreenParams.xy / 1024.0).r;
                 float offset = frac(blueNoise + timeOffset);
 
                 float4 res = raymarch(ro, rd, offset);
-
-                float3 backgroundColor = UNITY_SAMPLE_SCREENSPACE_TEXTURE(_CameraOpaqueTexture, i.grabPos.xy / i.grabPos.w).rgb;
-                float3 finalColor = backgroundColor * (1.0 - res.a) + res.rgb;
+                
+                // Create a softer edge falloff & apply to alpha 
+                res.a *= smoothstep(0.0, 0.15, res.a);
+                
+                // Sample background colour & blend with cloud colour
+                float2 grabUV = i.grabPos.xy / i.grabPos.w;
+                float3 backgroundColor = UNITY_SAMPLE_SCREENSPACE_TEXTURE(_CameraOpaqueTexture, grabUV).rgb;
+                float3 cloudColor = res.a > 0.0001 ? res.rgb / res.a : float3(1,1,1);
+                
+                float3 finalColor = lerp(backgroundColor, cloudColor, res.a);
                 
                 return float4(finalColor, res.a);
             }

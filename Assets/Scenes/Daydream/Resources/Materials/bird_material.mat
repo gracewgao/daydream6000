@@ -169,7 +169,7 @@ Material:
     - _AlphaSrcBlend: 1
     - _Anisotropy: 0
     - _BlendMode: 0
-    - _CloudDensity: 1.4
+    - _CloudDensity: 1.1
     - _CloudSpeed: 0.5
     - _CoatMask: 0
     - _CullMode: 2
@@ -217,11 +217,11 @@ Material:
     - _MetallicRemapMax: 1
     - _MetallicRemapMin: 0
     - _NoiseBias: 0.7
-    - _NoiseGain: 0.735
-    - _NoiseLacunarity: 2.92
+    - _NoiseGain: 0.839
+    - _NoiseLacunarity: 2.08
     - _NoiseRange: 1
     - _NoiseScale: 1
-    - _NoiseStrength: 0.3
+    - _NoiseStrength: 0.272
     - _NormalMapSpace: 0
     - _NormalScale: 1
     - _ObjectSpaceUVMapping: 0
