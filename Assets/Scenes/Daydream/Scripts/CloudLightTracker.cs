@@ -40,7 +40,6 @@ public class CloudLightTracker : MonoBehaviour
             Vector3 lightDir = transform.InverseTransformDirection(-directionalLight.transform.forward);
             
             // update shader
-            Debug.Log("Updating Sun direction property to (" + lightDir.x + ", " + lightDir.y + ", " + lightDir.z + ")");
             objectRenderer.sharedMaterial.SetVector("_SunDirection", lightDir);
             
             // cache values

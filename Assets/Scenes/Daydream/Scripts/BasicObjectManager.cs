@@ -95,8 +95,15 @@ public class BasicObjectManager : MonoBehaviour
                     Renderer renderer = objects[key].GetComponent<Renderer>();
                     if (renderer != null)
                     {
+                        // Assign a random material to the gameobject
                         Material randomMaterial = availableMeshes[UnityEngine.Random.Range(0, availableMeshes.Count)];
                         renderer.material = randomMaterial;
+
+                        // Also assign the script to the gameobject
+                        if (obj.GetComponent<CloudLightTracker>() == null)
+                        {
+                            obj.AddComponent<CloudLightTracker>();
+                        }
                     }
                     positions[key] = new TrackedObjectData(value.Position, value.StationaryTime, true);    // flag to indicate mesh has already been generated
                 }
@@ -118,6 +125,13 @@ public class BasicObjectManager : MonoBehaviour
                 if (renderer != null)
                 {
                     renderer.material = objectMaterial;     // sphere material
+
+                    // remove CloudLightTracker when mesh not visible
+                    if (obj.GetComponent<CloudLightTracker>() != null)
+                    {
+                        CloudLightTracker cloudLightTracker = obj.GetComponent<CloudLightTracker>();
+                        Destroy(cloudLightTracker);
+                    }
                 }
 
                 obj.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
