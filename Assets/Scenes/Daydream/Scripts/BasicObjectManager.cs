@@ -32,6 +32,8 @@ public class BasicObjectManager : MonoBehaviour
     private List<Material> availableMeshes = new List<Material>();
 
     private float HEIGHT = 250f;
+    private float LENGTH_SCALE = 24.6f / 8.84f;
+    private float WIDTH_SCALE = 19.8f / 8.43f;
 
     void LoadMeshesFromFolder()
     {
@@ -132,9 +134,9 @@ public class BasicObjectManager : MonoBehaviour
             return;
 
         Vector3 currentPosition = new Vector3(
-            augmentaObject.worldPosition3D.x,
-            augmentaObject.worldPosition3D.y + HEIGHT - 2f,
-            augmentaObject.worldPosition3D.z
+            augmentaObject.worldPosition3D.x * LENGTH_SCALE,
+            augmentaObject.worldPosition3D.y + HEIGHT,
+            augmentaObject.worldPosition3D.z * WIDTH_SCALE
         );
 
         if (!objects.ContainsKey(augmentaObject.oid))
