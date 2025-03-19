@@ -9,19 +9,21 @@ public class EyepoolCubeGenerator : MonoBehaviour
     public float floorWidth = 2.97f;
     public float floorLength = 3.69f;
 
-    private Dictionary<int, Dictionary<string, List<Camera>>> camerasByDisplay = new Dictionary<int, Dictionary<string, List<Camera>>>();
-
     public Material Mat1;
     public Material Mat2;
     public Material Mat3;
     public Material Mat4;
     public Material FloorMat;
 
+    private int displayPortFrontBack = 0;
+    private int displayPortLeftRight = 1;
+    private int displayPortFloor1 = 2;
+    private int displayPortFloor2 = 3;
+
+    private Dictionary<int, Dictionary<string, List<Camera>>> camerasByDisplay = new Dictionary<int, Dictionary<string, List<Camera>>>();
+
     void Start()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-
         // Activate all available displays
         for (int i = 1; i < Display.displays.Length; i++)
         {
@@ -45,32 +47,65 @@ public class EyepoolCubeGenerator : MonoBehaviour
         wall.transform.position = position;
         wall.transform.rotation = rotation;
         wall.name = label;  // Naming for debugging
+        Vector3 origin = new Vector3(0.0f, 255.4f, 0.0f);
+        RenderTexture renderTexture;
+
+        // // Add necessary components if missing
+        // MeshFilter meshFilter = wall.AddComponent<MeshFilter>();
+        // MeshRenderer meshRenderer = wall.AddComponent<MeshRenderer>();
+
+        // // Assign a Quad as the mesh (Unity's Plane has weird UVs)
+        // meshFilter.mesh = Resources.GetBuiltinResource<Mesh>("Quad.fbx");
+
+        // // Set material if available, otherwise create a default material
+        // if (meshRenderer.material == null)
+        // {
+        //     meshRenderer.material = new Material(Shader.Find("Standard"));
+        // }
+
+        bool isSceneViewer = true;
+        string middle = "_middle";
 
         if (label == "Front") {
             wall.transform.localScale = new Vector3(wallLength / 10, 250, wallHeight / 10);
-            wall.GetComponent<Renderer>().material = Mat1;
+            renderTexture = new RenderTexture((int)wallLength / 10, (int)wallHeight / 10, 24);
+            renderTexture.Create();
+            wall.GetComponent<Renderer>().material.mainTexture = renderTexture;
+            Camera cam = CreateCamera(origin, middle, Quaternion.Euler(0, 180, 0), "FrontCamera", 4, isSceneViewer);
+            cam.targetTexture = renderTexture;
+            // wall.GetComponent<Renderer>().material = Mat1;
         } else if (label == "Back") {
             wall.transform.localScale = new Vector3(wallLength / 10, 250, wallHeight / 10);
-            wall.GetComponent<Renderer>().material = Mat3;
+            renderTexture = new RenderTexture((int)wallLength / 10, (int)wallHeight / 10, 24);
+            renderTexture.Create();
+            wall.GetComponent<Renderer>().material.mainTexture = renderTexture;
+            Camera cam = CreateCamera(origin, middle, Quaternion.Euler(0, 0, 0), "BackCamera", 5, isSceneViewer);
+            cam.targetTexture = renderTexture;
+            // wall.GetComponent<Renderer>().material = Mat3;
         } else if (label == "Right") {
             wall.transform.localScale = new Vector3(wallWidth / 10, 250, wallHeight / 10);
-            wall.GetComponent<Renderer>().material = Mat2;
+            renderTexture = new RenderTexture((int)wallWidth / 10, (int)wallHeight / 10, 24);
+            renderTexture.Create();
+            wall.GetComponent<Renderer>().material.mainTexture = renderTexture;
+            Camera cam = CreateCamera(origin, middle, Quaternion.Euler(0, -90, 0), "RightCamera", 6, isSceneViewer);
+            cam.targetTexture = renderTexture;
+            // wall.GetComponent<Renderer>().material = Mat2;
         } else if (label == "Left") {
             wall.transform.localScale = new Vector3(wallWidth / 10, 250, wallHeight / 10);
-            wall.GetComponent<Renderer>().material = Mat4;
+            renderTexture = new RenderTexture((int)wallWidth / 10, (int)wallHeight / 10, 24);
+            renderTexture.Create();
+            wall.GetComponent<Renderer>().material.mainTexture = renderTexture;
+            Camera cam = CreateCamera(origin, middle, Quaternion.Euler(0, 90, 0), "LeftCamera", 7, isSceneViewer);
+            cam.targetTexture = renderTexture;
+            // wall.GetComponent<Renderer>().material = Mat4;
         } else { // Floor
             wall.transform.localScale = new Vector3(floorLength * 2 / 3, 250, floorWidth * 2 / 3);
-            wall.GetComponent<Renderer>().material = FloorMat;
+            // wall.GetComponent<Renderer>().material = FloorMat;
         }
     }
 
     void SetupCameras()
     {
-        int displayPortFrontBack = 0;
-        int displayPortLeftRight = 1;
-        int displayPortFloor1 = 2;
-        int displayPortFloor2 = 3;
-
         // Walls
         Vector3 rightWallLeftQuadrant = new Vector3(-7.47f, 255.4f, -7.2f);
         Vector3 rightWallRightQuadrant = new Vector3(-7.47f, 255.4f, 7.2f);
@@ -116,23 +151,38 @@ public class EyepoolCubeGenerator : MonoBehaviour
         CreateCamera(floorTopLeftQuadrant2, left, Quaternion.Euler(90, 0, 0), "FloorCameraDown", displayPortFloor2);
     }
 
-    void CreateCamera(Vector3 position, string direction, Quaternion rotation, string label, int displayPort)
+    Camera CreateCamera(Vector3 position, string direction, Quaternion rotation, string label, int displayPort, bool isSceneViewer = false)
     {
         GameObject camObj = new GameObject(label + direction);
         Camera cam = camObj.AddComponent<Camera>();
         camObj.transform.position = position;
         camObj.transform.rotation = rotation;
         cam.targetDisplay = displayPort;
-        cam.fieldOfView = CalculateFOVForPosition(position);
-        cam.aspect = 16f / 9f;
 
-        if (!camerasByDisplay.ContainsKey(displayPort))
-            camerasByDisplay[displayPort] = new Dictionary<string, List<Camera>>();
-        if (!camerasByDisplay[displayPort].ContainsKey(label))
-            camerasByDisplay[displayPort][label] = new List<Camera>();
+        if (isSceneViewer) {
+            float distance = 0.0f; // near clipping plane
+            float offset = 0.01f; // for the near clipping plane
+            cam.fieldOfView = 90;
+            cam.aspect = 16f / 9f;
+            if (label == "Front" || label == "Back") {
+                distance = wallWidth / 2.0f;
+            } else if (label == "Left" || label == "Right") {
+                distance = wallHeight / 2.0f;
+            }
+            cam.nearClipPlane = 40.0f; // distance + offset;
+        } else {
+            cam.fieldOfView = CalculateFOVForPosition(position);
+            cam.aspect = 16f / 9f;
+            
+            if (!camerasByDisplay.ContainsKey(displayPort))
+                camerasByDisplay[displayPort] = new Dictionary<string, List<Camera>>();
+            if (!camerasByDisplay[displayPort].ContainsKey(label))
+                camerasByDisplay[displayPort][label] = new List<Camera>();
 
-        camerasByDisplay[displayPort][label].Add(cam);
-        SetViewport(cam, displayPort, label);
+            camerasByDisplay[displayPort][label].Add(cam);
+            SetViewport(cam, displayPort, label);
+        }
+        return cam;
     }
 
     void SetViewport(Camera cam, int displayPort, string label)
