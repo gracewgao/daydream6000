@@ -13,6 +13,8 @@ public class AugmentaParticleManager : MonoBehaviour
     private Dictionary<int, Vector3> previousPositions = new Dictionary<int, Vector3>();
 
     private float HEIGHT = 250f;
+    private float LENGTH_SCALE = 24.6f / 8.84f;
+    private float WIDTH_SCALE = 19.8f / 8.43f;
 
     private void OnEnable()
     {
@@ -34,9 +36,9 @@ public class AugmentaParticleManager : MonoBehaviour
 
         // Vector3 currentPosition = augmentaObject.worldPosition3D;
         Vector3 currentPosition = new Vector3(
-            augmentaObject.worldPosition3D.x, 
-            augmentaObject.worldPosition2D.y + HEIGHT,
-            augmentaObject.worldPosition2D.z
+            augmentaObject.worldPosition3D.x * LENGTH_SCALE, 
+            augmentaObject.worldPosition2D.y + HEIGHT + 0.5f,
+            augmentaObject.worldPosition2D.z * WIDTH_SCALE
         );
 
         if (!particleSystems.ContainsKey(augmentaObject.oid))

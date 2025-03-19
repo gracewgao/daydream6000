@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/RichardIsDoingHisBest/EYEPOOL mimic.unity
     guid: 88921183db845478d914271865d73d81
   - enabled: 1
