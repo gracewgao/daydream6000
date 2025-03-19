@@ -19,6 +19,9 @@ public class EyepoolCubeGenerator : MonoBehaviour
 
     void Start()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
         // Activate all available displays
         for (int i = 1; i < Display.displays.Length; i++)
         {
