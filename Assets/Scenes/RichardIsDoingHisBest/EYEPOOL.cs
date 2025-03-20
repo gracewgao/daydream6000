@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Rendering.HighDefinition;
 
 public class EyepoolCubeGenerator : MonoBehaviour
 {
@@ -82,7 +83,7 @@ public class EyepoolCubeGenerator : MonoBehaviour
         Vector3 frontWallRightQuadrant = new Vector3(-7.2f, 455.4f, -7.47f);
 
         Vector3 backWallLeftQuadrant = new Vector3(-7.2f, 455.4f, 7.47f);
-        Vector3 backWallRightQuadrant = new Vector3(7.2f, 455.44f, 7.47f);
+        Vector3 backWallRightQuadrant = new Vector3(7.2f, 455.4f, 7.47f);
 
         // Floor
         Vector3 floorTopRightQuadrant1 = new Vector3(-5.85f, 456.2f, 6.25f);
@@ -125,6 +126,16 @@ public class EyepoolCubeGenerator : MonoBehaviour
         cam.targetDisplay = displayPort;
         cam.fieldOfView = CalculateFOVForPosition(position);
         cam.aspect = 16f / 9f;
+
+        // HDAdditionalCameraData hdCameraData = cam.GetComponent<Environment>();
+        // if (hdCameraData != null)
+        // {
+        //     // This controls how the camera clears the screen. In HDRP, "Color" is the equivalent of a solid color clear.
+        //     hdCameraData.clearColorMode = HDAdditionalCameraData.ClearColorMode.Color;
+
+        //     // Sets the actual color used when clearing the background.
+        //     hdCameraData.backgroundColorHDR = Color.magenta;
+        // }
 
         if (!camerasByDisplay.ContainsKey(displayPort))
             camerasByDisplay[displayPort] = new Dictionary<string, List<Camera>>();
