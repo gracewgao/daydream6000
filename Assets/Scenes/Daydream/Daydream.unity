@@ -645,11 +645,11 @@ MonoBehaviour:
   wallHeight: 10.8
   floorWidth: 2.97
   floorLength: 3.69
-  Mat1: {fileID: 2100000, guid: 5047f27a30f1147b2aa494f903927857, type: 2}
-  Mat2: {fileID: 2100000, guid: 5047f27a30f1147b2aa494f903927857, type: 2}
-  Mat3: {fileID: 2100000, guid: 5047f27a30f1147b2aa494f903927857, type: 2}
-  Mat4: {fileID: 2100000, guid: 5047f27a30f1147b2aa494f903927857, type: 2}
-  FloorMat: {fileID: 2100000, guid: 5047f27a30f1147b2aa494f903927857, type: 2}
+  Mat1: {fileID: 2100000, guid: 3c2c5b313ec1c451baa6833d0c119c22, type: 2}
+  Mat2: {fileID: 2100000, guid: 3c2c5b313ec1c451baa6833d0c119c22, type: 2}
+  Mat3: {fileID: 2100000, guid: 3c2c5b313ec1c451baa6833d0c119c22, type: 2}
+  Mat4: {fileID: 2100000, guid: 3c2c5b313ec1c451baa6833d0c119c22, type: 2}
+  FloorMat: {fileID: 0}
 --- !u!4 &1399135384
 Transform:
   m_ObjectHideFlags: 0
