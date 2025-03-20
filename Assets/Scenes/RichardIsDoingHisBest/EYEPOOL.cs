@@ -66,42 +66,51 @@ public class EyepoolCubeGenerator : MonoBehaviour
         bool isSceneViewer = true;
         string middle = "_middle";
 
+        int wallPixelWidth = 3360;
+        int wallPixelHeight = 1080;
+        int renderTextureDepth = 24;
+
         if (label == "Front") {
             wall.transform.localScale = new Vector3(wallLength / 10, 250, wallHeight / 10);
-            renderTexture = new RenderTexture((int)wallLength / 10, (int)wallHeight / 10, 24);
+            renderTexture = new RenderTexture(wallPixelWidth, wallPixelHeight, renderTextureDepth);
             renderTexture.Create();
             wall.GetComponent<Renderer>().material.mainTexture = renderTexture;
             Camera cam = CreateCamera(origin, middle, Quaternion.Euler(0, 180, 0), "FrontCamera", 4, isSceneViewer);
             cam.targetTexture = renderTexture;
+            // cam.orthographic = true;
             // wall.GetComponent<Renderer>().material = Mat1;
         } else if (label == "Back") {
             wall.transform.localScale = new Vector3(wallLength / 10, 250, wallHeight / 10);
-            renderTexture = new RenderTexture((int)wallLength / 10, (int)wallHeight / 10, 24);
+            renderTexture = new RenderTexture(wallPixelWidth, wallPixelHeight, renderTextureDepth);
             renderTexture.Create();
             wall.GetComponent<Renderer>().material.mainTexture = renderTexture;
             Camera cam = CreateCamera(origin, middle, Quaternion.Euler(0, 0, 0), "BackCamera", 5, isSceneViewer);
             cam.targetTexture = renderTexture;
+            // cam.orthographic = true;
             // wall.GetComponent<Renderer>().material = Mat3;
         } else if (label == "Right") {
             wall.transform.localScale = new Vector3(wallWidth / 10, 250, wallHeight / 10);
-            renderTexture = new RenderTexture((int)wallWidth / 10, (int)wallHeight / 10, 24);
+            renderTexture = new RenderTexture(wallPixelWidth, wallPixelHeight, renderTextureDepth);
             renderTexture.Create();
             wall.GetComponent<Renderer>().material.mainTexture = renderTexture;
             Camera cam = CreateCamera(origin, middle, Quaternion.Euler(0, -90, 0), "RightCamera", 6, isSceneViewer);
             cam.targetTexture = renderTexture;
+            // cam.orthographic = true;
             // wall.GetComponent<Renderer>().material = Mat2;
         } else if (label == "Left") {
             wall.transform.localScale = new Vector3(wallWidth / 10, 250, wallHeight / 10);
-            renderTexture = new RenderTexture((int)wallWidth / 10, (int)wallHeight / 10, 24);
+            renderTexture = new RenderTexture(wallPixelWidth, wallPixelHeight, renderTextureDepth);
             renderTexture.Create();
             wall.GetComponent<Renderer>().material.mainTexture = renderTexture;
             Camera cam = CreateCamera(origin, middle, Quaternion.Euler(0, 90, 0), "LeftCamera", 7, isSceneViewer);
             cam.targetTexture = renderTexture;
+            // cam.orthographic = true;
             // wall.GetComponent<Renderer>().material = Mat4;
         } else { // Floor
             wall.transform.localScale = new Vector3(floorLength * 2 / 3, 250, floorWidth * 2 / 3);
             // wall.GetComponent<Renderer>().material = FloorMat;
         }
+        wall.GetComponent<Renderer>().material.color = Color.black;
     }
 
     void SetupCameras()
