@@ -29,11 +29,11 @@ public class EyepoolCubeGenerator : MonoBehaviour
         }
 
         // Create walls and floor (without cameras)
-        CreateWall(new Vector3(0, 250, 0), Quaternion.Euler(0, 0, 0), displayPort: 2, "Floor");
-        CreateWall(new Vector3(0, 250 + wallHeight / 2, wallWidth / 2), Quaternion.Euler(-90, 0, 0), displayPort: 0, "Front");
-        CreateWall(new Vector3(0, 250 + wallHeight / 2, -wallWidth / 2), Quaternion.Euler(90, 0, 0), displayPort: 0, "Back");
-        CreateWall(new Vector3(wallLength / 2, 250 + wallHeight / 2, 0), Quaternion.Euler(-90, 90, 0), displayPort: 1, "Right");
-        CreateWall(new Vector3(-wallLength / 2, 250 + wallHeight / 2, 0), Quaternion.Euler(-90, -90, 0), displayPort: 1, "Left");
+        CreateWall(new Vector3(0, 450, 0), Quaternion.Euler(0, 0, 0), displayPort: 2, "Floor");
+        CreateWall(new Vector3(0, 450 + wallHeight / 2, wallWidth / 2), Quaternion.Euler(90, 0, 180), displayPort: 0, "Front");
+        CreateWall(new Vector3(0, 450 + wallHeight / 2, -wallWidth / 2), Quaternion.Euler(90, 0, 0), displayPort: 0, "Back");
+        CreateWall(new Vector3(wallLength / 2, 450 + wallHeight / 2, 0), Quaternion.Euler(90, 0, 90), displayPort: 1, "Right");
+        CreateWall(new Vector3(-wallLength / 2, 450 + wallHeight / 2, 0), Quaternion.Euler(90, 0, -90), displayPort: 1, "Left");
         
         // Set up the cameras
         SetupCameras();
@@ -47,19 +47,19 @@ public class EyepoolCubeGenerator : MonoBehaviour
         wall.name = label;  // Naming for debugging
 
         if (label == "Front") {
-            wall.transform.localScale = new Vector3(wallLength / 10, 250, wallHeight / 10);
+            wall.transform.localScale = new Vector3(wallLength / 10, 450, wallHeight / 10);
             wall.GetComponent<Renderer>().material = Mat1;
         } else if (label == "Back") {
-            wall.transform.localScale = new Vector3(wallLength / 10, 250, wallHeight / 10);
+            wall.transform.localScale = new Vector3(wallLength / 10, 450, wallHeight / 10);
             wall.GetComponent<Renderer>().material = Mat3;
         } else if (label == "Right") {
-            wall.transform.localScale = new Vector3(wallWidth / 10, 250, wallHeight / 10);
+            wall.transform.localScale = new Vector3(wallWidth / 10, 450, wallHeight / 10);
             wall.GetComponent<Renderer>().material = Mat2;
         } else if (label == "Left") {
-            wall.transform.localScale = new Vector3(wallWidth / 10, 250, wallHeight / 10);
+            wall.transform.localScale = new Vector3(wallWidth / 10, 450, wallHeight / 10);
             wall.GetComponent<Renderer>().material = Mat4;
         } else { // Floor
-            wall.transform.localScale = new Vector3(floorLength * 2 / 3, 250, floorWidth * 2 / 3);
+            wall.transform.localScale = new Vector3(floorLength * 2 / 3, 450, floorWidth * 2 / 3);
             wall.GetComponent<Renderer>().material = FloorMat;
         }
     }
@@ -72,27 +72,27 @@ public class EyepoolCubeGenerator : MonoBehaviour
         int displayPortFloor2 = 3;
 
         // Walls
-        Vector3 rightWallLeftQuadrant = new Vector3(-7.47f, 255.4f, -7.2f);
-        Vector3 rightWallRightQuadrant = new Vector3(-7.47f, 255.4f, 7.2f);
+        Vector3 rightWallLeftQuadrant = new Vector3(-7.47f, 455.4f, -7.2f);
+        Vector3 rightWallRightQuadrant = new Vector3(-7.47f, 455.4f, 7.2f);
 
-        Vector3 leftWallLeftQuadrant = new Vector3(7.47f, 255.4f, 7.2f);
-        Vector3 leftWallRightQuadrant = new Vector3(7.47f, 255.4f, -7.2f);
+        Vector3 leftWallLeftQuadrant = new Vector3(7.47f, 455.4f, 7.2f);
+        Vector3 leftWallRightQuadrant = new Vector3(7.47f, 455.4f, -7.2f);
 
-        Vector3 frontWallLeftQuadrant = new Vector3(7.2f, 255.4f, -7.47f);
-        Vector3 frontWallRightQuadrant = new Vector3(-7.2f, 255.4f, -7.47f);
+        Vector3 frontWallLeftQuadrant = new Vector3(7.2f, 455.4f, -7.47f);
+        Vector3 frontWallRightQuadrant = new Vector3(-7.2f, 455.4f, -7.47f);
 
-        Vector3 backWallLeftQuadrant = new Vector3(-7.2f, 255.4f, 7.47f);
-        Vector3 backWallRightQuadrant = new Vector3(7.2f, 255.44f, 7.47f);
+        Vector3 backWallLeftQuadrant = new Vector3(-7.2f, 455.4f, 7.47f);
+        Vector3 backWallRightQuadrant = new Vector3(7.2f, 455.44f, 7.47f);
 
         // Floor
-        Vector3 floorTopRightQuadrant1 = new Vector3(-5.85f, 256.2f, 6.25f);
-        Vector3 floorTopLeftQuadrant1 = new Vector3(5.85f, 256.2f, 6.25f);
+        Vector3 floorTopRightQuadrant1 = new Vector3(-5.85f, 456.2f, 6.25f);
+        Vector3 floorTopLeftQuadrant1 = new Vector3(5.85f, 456.2f, 6.25f);
 
-        Vector3 floorBottomRightQuadrant = new Vector3(-5.85f, 256.2f, 0);
-        Vector3 floorBottomLeftQuadrant = new Vector3(5.85f, 256.2f, 0);
+        Vector3 floorBottomRightQuadrant = new Vector3(-5.85f, 456.2f, 0);
+        Vector3 floorBottomLeftQuadrant = new Vector3(5.85f, 456.2f, 0);
 
-        Vector3 floorTopRightQuadrant2 = new Vector3(-5.85f, 256.2f, -6.25f);
-        Vector3 floorTopLeftQuadrant2 = new Vector3(5.85f, 256.2f, -6.25f);
+        Vector3 floorTopRightQuadrant2 = new Vector3(-5.85f, 456.2f, -6.25f);
+        Vector3 floorTopLeftQuadrant2 = new Vector3(5.85f, 456.2f, -6.25f);
 
         string left = "_left";
         string right = "_right";

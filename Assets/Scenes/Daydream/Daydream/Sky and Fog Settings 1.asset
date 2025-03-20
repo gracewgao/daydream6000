@@ -148,13 +148,31 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 0.15
-        value: 1
+        value: 0.8537736
         inSlope: 0
         outSlope: 0
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
+      - serializedVersion: 3
+        time: 0.40138885
+        value: 0.085427135
+        inSlope: -1.3174529
+        outSlope: -1.3174529
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.5902071
+        value: 0.30201298
+        inSlope: -0.68058014
+        outSlope: -0.68058014
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
         value: 0.1
@@ -251,10 +269,10 @@ MonoBehaviour:
     m_Value: 1
   shapeFactor:
     m_OverrideState: 1
-    m_Value: 0.3
+    m_Value: 0.343
   shapeScale:
     m_OverrideState: 1
-    m_Value: 52.4
+    m_Value: 106
   shapeOffset:
     m_OverrideState: 0
     m_Value: {x: 0, y: 0, z: 0}
@@ -288,16 +306,16 @@ MonoBehaviour:
   globalWindSpeed:
     m_OverrideState: 0
     m_Value:
-      mode: 1
+      mode: 3
       customValue: 100
       additiveValue: 0
       multiplyValue: 1
   orientation:
     m_OverrideState: 0
     m_Value:
-      mode: 1
+      mode: 2
       customValue: 0
-      additiveValue: 0
+      additiveValue: 40
       multiplyValue: 1
   altitudeDistortion:
     m_OverrideState: 0
@@ -405,10 +423,10 @@ MonoBehaviour:
     m_Value: -10
   maximumHeight:
     m_OverrideState: 1
-    m_Value: 260
+    m_Value: 300
   meanFreePath:
     m_OverrideState: 1
-    m_Value: 3
+    m_Value: 2
   enableVolumetricFog:
     m_OverrideState: 0
     m_Value: 1
@@ -522,10 +540,10 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 55261.973
   aerosolDensity:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   aerosolTint:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: {r: 1, g: 1, b: 1, a: 1}
   aerosolMaximumAltitude:
     m_OverrideState: 0
