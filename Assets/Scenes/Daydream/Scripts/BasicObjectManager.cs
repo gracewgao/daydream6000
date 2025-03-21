@@ -34,6 +34,8 @@ public class BasicObjectManager : MonoBehaviour
     private float HEIGHT = 250f;
     private float LENGTH_SCALE = 24.6f / 8.84f;
     private float WIDTH_SCALE = 19.8f / 8.43f;
+    private float START_SCALE = 0.2f;
+    private float END_SCALE = 3.0f;
 
     void LoadMeshesFromFolder()
     {
@@ -59,7 +61,7 @@ public class BasicObjectManager : MonoBehaviour
         augmentaManager.augmentaObjectLeave -= OnAugmentaObjectLeave;
     }
 
-    public static bool ApproximatelyEqual(Vector3 a, Vector3 b, float tolerance = 0.5f)
+    public static bool ApproximatelyEqual(Vector3 a, Vector3 b, float tolerance = 0.25f)
     {
         return Mathf.Abs(a.x - b.x) <= tolerance &&
                Mathf.Abs(a.y - b.y) <= tolerance &&
@@ -79,7 +81,7 @@ public class BasicObjectManager : MonoBehaviour
 
             obj.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
             
-            float swayAmount = Mathf.Sin(Time.time * 2f) * 20f; // 20 degrees sway at 2 Hz
+            float swayAmount = Mathf.Sin(Time.time * 0.5f) * 20f; // 20 degrees sway at 0.5 Hz
             obj.transform.Rotate(swayAmount * Time.deltaTime, swayAmount * Time.deltaTime, swayAmount * Time.deltaTime);
         }
 
@@ -110,10 +112,10 @@ public class BasicObjectManager : MonoBehaviour
                     positions[key] = new TrackedObjectData(value.Position, value.StationaryTime, true);    // flag to indicate mesh has already been generated
                 }
 
-                if (value.StationaryTime <= 3f)  // growing
+                if (value.StationaryTime > 0f && value.StationaryTime <= 3f)  // growing
                 {
                     float t = value.StationaryTime / 3f;
-                    float scale = Mathf.Lerp(0.8f, 1.5f, t);
+                    float scale = START_SCALE + (END_SCALE - START_SCALE) * t;
                     obj.transform.localScale = new Vector3(scale, scale, scale);
                 }
             }
@@ -136,7 +138,7 @@ public class BasicObjectManager : MonoBehaviour
                     }
                 }
 
-                obj.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                obj.transform.localScale = new Vector3(START_SCALE, START_SCALE, START_SCALE);
             }
         }
     }
