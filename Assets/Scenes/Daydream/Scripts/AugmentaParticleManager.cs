@@ -12,7 +12,7 @@ public class AugmentaParticleManager : MonoBehaviour
     private Dictionary<int, GameObject> particleSystems = new Dictionary<int, GameObject>();
     private Dictionary<int, Vector3> previousPositions = new Dictionary<int, Vector3>();
 
-    private float HEIGHT = 250f;
+    private float HEIGHT = 450f;
     private float LENGTH_SCALE = 24.6f / 8.84f;
     private float WIDTH_SCALE = 19.8f / 8.43f;
 
