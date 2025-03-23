@@ -13,7 +13,7 @@ public class AugmentaVFXManager : MonoBehaviour
     private Dictionary<int, VisualEffect> vfxComponents = new Dictionary<int, VisualEffect>();
     private Dictionary<int, Vector3> previousPositions = new Dictionary<int, Vector3>();
 
-    private float HEIGHT = 250f;
+    private float HEIGHT = 450f;
     private float LENGTH_SCALE = 24.6f / 8.84f;
     private float WIDTH_SCALE = 19.8f / 8.43f;
 
@@ -27,6 +27,11 @@ public class AugmentaVFXManager : MonoBehaviour
     {
         augmentaManager.augmentaObjectUpdate -= OnAugmentaObjectUpdate;
         augmentaManager.augmentaObjectLeave -= OnAugmentaObjectLeave;
+    }
+
+    public static bool ApproximatelyEqual(Vector3 a, Vector3 b, float tolerance = 0.25f)
+    {
+        return Vector3.Distance(a, b) <= tolerance;
     }
 
     // Called when an object is updated or enters the scene
@@ -63,6 +68,11 @@ public class AugmentaVFXManager : MonoBehaviour
         
         // set spawn position for new particles
         vfx.SetVector3("SpawnPosition", currentPosition);
+
+        // check if particles should spawn
+        Vector3 previousPosition = previousPositions[augmentaObject.oid];
+        bool isMoving = !ApproximatelyEqual(currentPosition, previousPosition);
+        vfx.SetBool("EnableSpawning", isMoving);
         
         previousPositions[augmentaObject.oid] = currentPosition;
     }
