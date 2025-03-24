@@ -6,13 +6,15 @@ using System;
 
 public class TrackedObjectData
 {
-    public Vector3 Position;        // last known position
-    public float StationaryTime;    // how long it's been still
-    public bool MaterialSet;        // whether material has alreday been set
+    public Vector3 Position;            // raw position
+    public Vector3 SmoothedPosition;    // smoothed position
+    public float StationaryTime;        // how long it's been still
+    public bool MaterialSet;            // whether material has already been set
 
     public TrackedObjectData(Vector3 position, float stationaryTime = 0f, bool materialSet = false)
     {
         Position = position;
+        SmoothedPosition = position;
         StationaryTime = stationaryTime;
         MaterialSet = materialSet;
     }
@@ -20,8 +22,8 @@ public class TrackedObjectData
 
 public class BasicObjectManager : MonoBehaviour
 {
-    public AugmentaManager augmentaManager; // augmentaManager reference
-    public GameObject objectManager;        // parent for objects
+    public AugmentaManager augmentaManager;
+    public GameObject objectManager;
     public Mesh mesh;
     public Material objectMaterial;
 
@@ -29,22 +31,24 @@ public class BasicObjectManager : MonoBehaviour
     private Dictionary<int, GameObject> objects = new Dictionary<int, GameObject>();
 
     public string materialFolderPath = "Materials";
-    private List<Material> availableMeshes = new List<Material>();
+    private List<Material> availableMaterials = new List<Material>();
 
-    private float HEIGHT = 250f;
+    private float HEIGHT = 450f;
     private float LENGTH_SCALE = 24.6f / 8.84f;
     private float WIDTH_SCALE = 19.8f / 8.43f;
-
-    void LoadMeshesFromFolder()
+    private float START_SCALE = 0.2f;
+    private float END_SCALE = 3.0f;
+    private float SMOOTH_FACTOR = 0.5f; // 0 = no movement, 1 = no smoothing
+    void LoadMaterialsFromFolder()
     {
-        Material[] meshes = Resources.LoadAll<Material>(materialFolderPath);
-        if (meshes.Length == 0)
+        Material[] materials = Resources.LoadAll<Material>(materialFolderPath);
+        if (materials.Length == 0)
         {
-            Debug.LogError("no materials found in Assets/Resources/" + materialFolderPath);
+            Debug.LogError("No materials found in Assets/Resources/" + materialFolderPath);
             return;
         }
 
-        availableMeshes = new List<Material>(meshes);
+        availableMaterials = new List<Material>(materials);
     }
 
     private void OnEnable()
@@ -59,93 +63,82 @@ public class BasicObjectManager : MonoBehaviour
         augmentaManager.augmentaObjectLeave -= OnAugmentaObjectLeave;
     }
 
-    public static bool ApproximatelyEqual(Vector3 a, Vector3 b, float tolerance = 0.5f)
+    public static bool ApproximatelyEqual(Vector3 a, Vector3 b, float tolerance = 0.25f)
     {
-        return Mathf.Abs(a.x - b.x) <= tolerance &&
-               Mathf.Abs(a.y - b.y) <= tolerance &&
-               Mathf.Abs(a.z - b.z) <= tolerance;
+        return Vector3.Distance(a, b) <= tolerance;
     }
 
     void Start()
     {
-        LoadMeshesFromFolder();
+        LoadMaterialsFromFolder();
     }
 
     void Update()
     {
-        foreach (var item in objects)
+        foreach (var pair in positions)
         {
-            GameObject obj = item.Value;
+            int id = pair.Key;
+            TrackedObjectData data = pair.Value;
+            GameObject obj = objects[id];
+
+            // apply smoothing
+            data.SmoothedPosition += (data.Position - data.SmoothedPosition) * SMOOTH_FACTOR;
+            obj.transform.position = data.SmoothedPosition;
 
             obj.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-            
-            float swayAmount = Mathf.Sin(Time.time * 2f) * 20f; // 20 degrees sway at 2 Hz
+            float swayAmount = Mathf.Sin(Time.time * 0.5f) * 20f;
             obj.transform.Rotate(swayAmount * Time.deltaTime, swayAmount * Time.deltaTime, swayAmount * Time.deltaTime);
-        }
 
-        List<int> keys = new List<int>(positions.Keys);
-        foreach (int key in keys)
-        {
-            TrackedObjectData value = positions[key];
-            if (ApproximatelyEqual(value.Position, objects[key].transform.position))
+            // check if stationary
+            if (ApproximatelyEqual(data.Position, data.SmoothedPosition))
             {
-                GameObject obj = objects[key];
-                positions[key] = new TrackedObjectData(value.Position, value.StationaryTime + Time.deltaTime, value.MaterialSet);
+                data.StationaryTime += Time.deltaTime;
 
-                if (value.StationaryTime > 1f && !value.MaterialSet) // change mesh if standing more than 1 second
+                if (data.StationaryTime > 1f && !data.MaterialSet)
                 {
-                    Renderer renderer = objects[key].GetComponent<Renderer>();
+                    Renderer renderer = obj.GetComponent<Renderer>();
                     if (renderer != null)
                     {
                         // Assign a random material to the gameobject
-                        Material randomMaterial = availableMeshes[UnityEngine.Random.Range(0, availableMeshes.Count)];
-                        renderer.material = randomMaterial;
-
+                        renderer.material = availableMaterials[UnityEngine.Random.Range(0, availableMaterials.Count)];
                         // Also assign the script to the gameobject
                         if (obj.GetComponent<CloudLightTracker>() == null)
                         {
                             obj.AddComponent<CloudLightTracker>();
                         }
                     }
-                    positions[key] = new TrackedObjectData(value.Position, value.StationaryTime, true);    // flag to indicate mesh has already been generated
+                    data.MaterialSet = true;
                 }
 
-                if (value.StationaryTime <= 3f)  // growing
+                if (data.StationaryTime > 0f && data.StationaryTime <= 3f)
                 {
-                    float t = value.StationaryTime / 3f;
-                    float scale = Mathf.Lerp(0.8f, 1.5f, t);
-                    obj.transform.localScale = new Vector3(scale, scale, scale);
+                    float t = data.StationaryTime / 3f;
+                    float scale = START_SCALE + (END_SCALE - START_SCALE) * t;
+                    obj.transform.localScale = Vector3.one * scale;
                 }
             }
             else
             {
-                GameObject obj = objects[key];
+                data.StationaryTime = 0f;
+                data.MaterialSet = false;
 
-                positions[key] = new TrackedObjectData(obj.transform.position, 0f, false); // reset timer
+                obj.transform.localScale = Vector3.one * START_SCALE;
 
                 Renderer renderer = obj.GetComponent<Renderer>();
                 if (renderer != null)
                 {
                     renderer.material = objectMaterial;     // sphere material
-
                     // remove CloudLightTracker when mesh not visible
-                    if (obj.GetComponent<CloudLightTracker>() != null)
-                    {
-                        CloudLightTracker cloudLightTracker = obj.GetComponent<CloudLightTracker>();
-                        Destroy(cloudLightTracker);
-                    }
+                    var tracker = obj.GetComponent<CloudLightTracker>();
+                    if (tracker != null) Destroy(tracker);
                 }
-
-                obj.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             }
         }
     }
 
-    // called when an Augmenta object is updated or enters the scene
     private void OnAugmentaObjectUpdate(AugmentaObject augmentaObject, AugmentaDataType augmentaDataType)
     {
-        if (augmentaDataType != AugmentaDataType.Main)
-            return;
+        if (augmentaDataType != AugmentaDataType.Main) return;
 
         Vector3 currentPosition = new Vector3(
             augmentaObject.worldPosition3D.x * LENGTH_SCALE,
@@ -155,41 +148,31 @@ public class BasicObjectManager : MonoBehaviour
 
         if (!objects.ContainsKey(augmentaObject.oid))
         {
-            GameObject newObject = new GameObject("RandomObject_" + augmentaObject.oid);
-            MeshFilter meshFilter = newObject.AddComponent<MeshFilter>();
-            MeshRenderer meshRenderer = newObject.AddComponent<MeshRenderer>();
-
-            meshFilter.mesh = mesh;
-
-            if (objectMaterial != null)
-            {
-                meshRenderer.material = objectMaterial;
-            }
-            newObject.transform.SetParent(objectManager.transform);
-            objects.Add(augmentaObject.oid, newObject);
-
+            GameObject newObj = new GameObject("RandomObject_" + augmentaObject.oid);
+            newObj.AddComponent<MeshFilter>().mesh = mesh;
+            newObj.AddComponent<MeshRenderer>().material = objectMaterial;
+            newObj.transform.SetParent(objectManager.transform);
+            newObj.transform.localScale = Vector3.one * START_SCALE;
+            objects[augmentaObject.oid] = newObj;
         }
 
         if (!positions.ContainsKey(augmentaObject.oid))
         {
-            positions.Add(augmentaObject.oid, new TrackedObjectData(currentPosition, 0f, false));
+            positions[augmentaObject.oid] = new TrackedObjectData(currentPosition);
         }
-
-        GameObject gameObject = objects[augmentaObject.oid];
-        gameObject.transform.position = currentPosition;
-
+        else
+        {
+            positions[augmentaObject.oid].Position = currentPosition;
+        }
     }
 
-    // called when an Augmenta object leaves the scene
     private void OnAugmentaObjectLeave(AugmentaObject augmentaObject, AugmentaDataType augmentaDataType)
     {
-        if (augmentaDataType != AugmentaDataType.Main)
-            return;
+        if (augmentaDataType != AugmentaDataType.Main) return;
 
         if (objects.ContainsKey(augmentaObject.oid))
         {
-            GameObject gameObject = objects[augmentaObject.oid];
-            Destroy(gameObject);
+            Destroy(objects[augmentaObject.oid]);
             objects.Remove(augmentaObject.oid);
         }
 

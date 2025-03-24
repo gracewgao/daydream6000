@@ -559,7 +559,7 @@ MonoBehaviour:
     m_Value: {r: 2, g: 2, b: 2, a: 1}
   maxFogDistance:
     m_OverrideState: 1
-    m_Value: 2000
+    m_Value: 10000
   mipFogMaxMip:
     m_OverrideState: 0
     m_Value: 0.5
@@ -571,7 +571,7 @@ MonoBehaviour:
     m_Value: 1000
   baseHeight:
     m_OverrideState: 1
-    m_Value: -10
+    m_Value: 0
   maximumHeight:
     m_OverrideState: 1
     m_Value: 300
@@ -780,9 +780,8 @@ MonoBehaviour:
   - {fileID: -2364042286758713647}
   - {fileID: -2399803264326582267}
   - {fileID: -3975494227883839230}
-  - {fileID: 1343816465318518247}
-  - {fileID: -3811261963272702899}
---- !u!114 &1343816465318518247
+  - {fileID: 7141581522132941783}
+--- !u!114 &7141581522132941783
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
