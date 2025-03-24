@@ -38,7 +38,7 @@ public class BasicObjectManager : MonoBehaviour
     private float WIDTH_SCALE = 19.8f / 8.43f;
     private float START_SCALE = 0.2f;
     private float END_SCALE = 3.0f;
-    private float SMOOTH_FACTOR = 0.5f; // 0 = no movement, 1 = no smoothing
+    private float SMOOTH_FACTOR = 0.2f; // 0 = no movement, 1 = no smoothing
     void LoadMaterialsFromFolder()
     {
         Material[] materials = Resources.LoadAll<Material>(materialFolderPath);

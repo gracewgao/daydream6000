@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d7593b3a9277ac4696b20006c21dde2, type: 3}
   m_Name: VisualEnvironment
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   skyType:
     m_OverrideState: 1
     m_Value: 4
@@ -24,10 +24,10 @@ MonoBehaviour:
     m_Value: 1
   planetRadius:
     m_OverrideState: 1
-    m_Value: 6378.1
+    m_Value: 40
   renderingSpace:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0
   centerMode:
     m_OverrideState: 1
     m_Value: 0
@@ -68,10 +68,10 @@ MonoBehaviour:
     m_Value: {x: 0, y: 0}
   bottomAltitude:
     m_OverrideState: 1
-    m_Value: 0.1
+    m_Value: 0.01
   altitudeRange:
     m_OverrideState: 1
-    m_Value: 200
+    m_Value: 450
   fadeInMode:
     m_OverrideState: 0
     m_Value: 0
@@ -86,7 +86,7 @@ MonoBehaviour:
     m_Value: 64
   numLightSteps:
     m_OverrideState: 0
-    m_Value: 6
+    m_Value: 26
   cloudMap:
     m_OverrideState: 0
     m_Value: {fileID: 0}
@@ -100,7 +100,7 @@ MonoBehaviour:
     m_Value: 0
   cloudSimpleMode:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   m_CloudPreset:
     m_OverrideState: 1
     m_Value: 4
@@ -147,8 +147,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.15
-        value: 0.8537736
+        time: 0.045835882
+        value: 0.87995005
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -156,8 +156,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.40138885
-        value: 0.085427135
+        time: 0.38055298
+        value: 0.33308494
         inSlope: -1.3174529
         outSlope: -1.3174529
         tangentMode: 0
@@ -165,8 +165,8 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.5902071
-        value: 0.30201298
+        time: 0.76936054
+        value: 0.4671436
         inSlope: -0.68058014
         outSlope: -0.68058014
         tangentMode: 0
@@ -174,8 +174,8 @@ MonoBehaviour:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1
-        value: 0.1
+        time: 0.9958191
+        value: 0.0033469275
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -192,7 +192,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -200,28 +200,28 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 0.1
-        value: 0.9
-        inSlope: 0
-        outSlope: 0
+        time: 0.17118676
+        value: 0.72379994
+        inSlope: 1.0971442
+        outSlope: 1.0971442
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
+        time: 0.84731686
+        value: 1.5417851
+        inSlope: 0.7908412
+        outSlope: 0.7908412
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
+        inWeight: 0.18920225
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
   ambientOcclusionCurve:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value:
       serializedVersion: 2
       m_Curve:
@@ -244,8 +244,8 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
-        value: 0
+        time: 0.92500204
+        value: 0.37829465
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -256,11 +256,11 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   scatteringTint:
-    m_OverrideState: 1
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    m_OverrideState: 0
+    m_Value: {r: 0.4245283, g: 0.18623175, b: 0.18623175, a: 1}
   powderEffectIntensity:
     m_OverrideState: 0
-    m_Value: 0.25
+    m_Value: 0.196
   multiScattering:
     m_OverrideState: 0
     m_Value: 0.5
@@ -269,16 +269,16 @@ MonoBehaviour:
     m_Value: 1
   shapeFactor:
     m_OverrideState: 1
-    m_Value: 0.343
+    m_Value: 0.288
   shapeScale:
     m_OverrideState: 1
-    m_Value: 106
+    m_Value: 145.52
   shapeOffset:
     m_OverrideState: 0
     m_Value: {x: 0, y: 0, z: 0}
   erosionFactor:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   erosionScale:
     m_OverrideState: 1
     m_Value: 1
@@ -290,7 +290,7 @@ MonoBehaviour:
     m_Value: 0
   microErosionFactor:
     m_OverrideState: 1
-    m_Value: 0.5
+    m_Value: 0.521
   microErosionScale:
     m_OverrideState: 1
     m_Value: 200
@@ -299,14 +299,14 @@ MonoBehaviour:
     m_Value: 1
   sunLightDimmer:
     m_OverrideState: 1
-    m_Value: 0.8
+    m_Value: 0.7
   erosionOcclusion:
     m_OverrideState: 0
     m_Value: 0.1
   globalWindSpeed:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value:
-      mode: 3
+      mode: 0
       customValue: 100
       additiveValue: 0
       multiplyValue: 1
@@ -378,6 +378,157 @@ MonoBehaviour:
   m_ObsoleteShapeOffsetZ:
     m_OverrideState: 0
     m_Value: 0
+--- !u!114 &-3811261963272702899
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d08ce26990eb1a4a9177b860541e702, type: 3}
+  m_Name: Exposure
+  m_EditorClassIdentifier: 
+  active: 0
+  mode:
+    m_OverrideState: 1
+    m_Value: 1
+  meteringMode:
+    m_OverrideState: 1
+    m_Value: 2
+  luminanceSource:
+    m_OverrideState: 1
+    m_Value: 1
+  fixedExposure:
+    m_OverrideState: 1
+    m_Value: -1.349999
+  compensation:
+    m_OverrideState: 1
+    m_Value: 0
+  limitMin:
+    m_OverrideState: 1
+    m_Value: -1
+  limitMax:
+    m_OverrideState: 1
+    m_Value: 14
+  curveMap:
+    m_OverrideState: 1
+    m_Value:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -10
+        value: -10
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 20
+        value: 20
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  limitMinCurveMap:
+    m_OverrideState: 1
+    m_Value:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -10
+        value: -12
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 20
+        value: 18
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  limitMaxCurveMap:
+    m_OverrideState: 1
+    m_Value:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -10
+        value: -8
+        inSlope: 0
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 20
+        value: 22
+        inSlope: 1
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  adaptationMode:
+    m_OverrideState: 1
+    m_Value: 1
+  adaptationSpeedDarkToLight:
+    m_OverrideState: 1
+    m_Value: 3
+  adaptationSpeedLightToDark:
+    m_OverrideState: 1
+    m_Value: 1
+  weightTextureMask:
+    m_OverrideState: 1
+    m_Value: {fileID: 0}
+  histogramPercentages:
+    m_OverrideState: 1
+    m_Value: {x: 40, y: 90}
+  histogramUseCurveRemapping:
+    m_OverrideState: 1
+    m_Value: 0
+  targetMidGray:
+    m_OverrideState: 1
+    m_Value: 0
+  centerAroundExposureTarget:
+    m_OverrideState: 1
+    m_Value: 0
+  proceduralCenter:
+    m_OverrideState: 1
+    m_Value: {x: 0.5, y: 0.5}
+  proceduralRadii:
+    m_OverrideState: 1
+    m_Value: {x: 0.3, y: 0.3}
+  maskMinIntensity:
+    m_OverrideState: 1
+    m_Value: -30
+  maskMaxIntensity:
+    m_OverrideState: 1
+    m_Value: 30
+  proceduralSoftness:
+    m_OverrideState: 1
+    m_Value: 0.5
 --- !u!114 &-2399803264326582267
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -629,8 +780,8 @@ MonoBehaviour:
   - {fileID: -2364042286758713647}
   - {fileID: -2399803264326582267}
   - {fileID: -3975494227883839230}
-  - {fileID: 7141581522132941783}
---- !u!114 &7141581522132941783
+  - {fileID: 1343816465318518247}
+  - {fileID: -3811261963272702899}
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -642,25 +793,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e88178bb13f64a54f90d6cd6ef7aa9a1, type: 3}
   m_Name: CloudLayer
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   opacity:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   upperHemisphereOnly:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   layers:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
   resolution:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1024
   shadowMultiplier:
     m_OverrideState: 0
     m_Value: 1
   shadowTint:
     m_OverrideState: 0
-    m_Value: {r: 0, g: 0, b: 0, a: 1}
+    m_Value: {r: 0.25520647, g: 0.26278767, b: 0.2924528, a: 1}
   shadowResolution:
     m_OverrideState: 0
     m_Value: 256
@@ -672,124 +823,124 @@ MonoBehaviour:
       m_OverrideState: 0
       m_Value: {fileID: 2800000, guid: 57a33fc2476a01644865bfde5f06e2f4, type: 3}
     opacityR:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 1
     opacityG:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
     opacityB:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
     opacityA:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
     altitude:
       m_OverrideState: 0
       m_Value: 2000
     rotation:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
     tint:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: {r: 1, g: 1, b: 1, a: 1}
     exposure:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
     distortionMode:
       m_OverrideState: 0
-      m_Value: 0
+      m_Value: 1
     scrollOrientation:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value:
         mode: 1
         customValue: 0
         additiveValue: 0
         multiplyValue: 1
     scrollSpeed:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value:
         mode: 1
         customValue: 100
         additiveValue: 0
         multiplyValue: 1
     flowmap:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: {fileID: 0}
     lighting:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 1
     steps:
-      m_OverrideState: 0
-      m_Value: 6
+      m_OverrideState: 1
+      m_Value: 11
     thickness:
-      m_OverrideState: 0
-      m_Value: 0.5
+      m_OverrideState: 1
+      m_Value: 0.34
     ambientProbeDimmer:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 1
     castShadows:
       m_OverrideState: 0
       m_Value: 0
   layerB:
     cloudMap:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: {fileID: 2800000, guid: 57a33fc2476a01644865bfde5f06e2f4, type: 3}
     opacityR:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 1
     opacityG:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
     opacityB:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
     opacityA:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
     altitude:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 2000
     rotation:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
     tint:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: {r: 1, g: 1, b: 1, a: 1}
     exposure:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
     distortionMode:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
     scrollOrientation:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value:
         mode: 1
         customValue: 0
         additiveValue: 0
         multiplyValue: 1
     scrollSpeed:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value:
         mode: 1
         customValue: 100
         additiveValue: 0
         multiplyValue: 1
     flowmap:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: {fileID: 0}
     lighting:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 1
     steps:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 6
     thickness:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0.5
     ambientProbeDimmer:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 1
     castShadows:
-      m_OverrideState: 0
+      m_OverrideState: 1
       m_Value: 0
