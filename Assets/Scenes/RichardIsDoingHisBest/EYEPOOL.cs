@@ -182,4 +182,10 @@ public class EyepoolCubeGenerator : MonoBehaviour
     {
         return 60f;
     }
+
+    public Vector3 GetEyepoolCubeSize()
+    {
+        // return dimensions of the LxWxH vector
+        return new Vector3(wallLength, wallHeight, wallWidth);
+    }
 }
