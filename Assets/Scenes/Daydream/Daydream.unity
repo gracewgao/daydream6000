@@ -1055,6 +1055,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dayDuration: 30
+  sunPathCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.27805364
+      outSlope: 0.27805364
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.92590266
+    - serializedVersion: 3
+      time: 0.25650644
+      value: 0.1018808
+      inSlope: 0.6133979
+      outSlope: 0.6133979
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.22861883
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.74490696
+      value: 0.9035269
+      inSlope: 0.5614593
+      outSlope: 0.5614593
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.5834687
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.28301898
+      outSlope: 0.28301898
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.78402764
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1399135382
 GameObject:
   m_ObjectHideFlags: 0
