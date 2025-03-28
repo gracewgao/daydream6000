@@ -1,28 +1,10 @@
-// using UnityEngine;
-
-// public class SunMovement : MonoBehaviour
-// {
-//     public float dayDuration = 300f; // 5 minutes
-//     private float elapsedTime = 0f;
-
-//     void Update()
-//     {
-//         elapsedTime += Time.deltaTime;
-//         if (elapsedTime > dayDuration)
-//         {
-//             elapsedTime = 0f; // reset cycle
-//         }
-
-//         float angle = (elapsedTime / dayDuration) * 180;
-//         transform.rotation = Quaternion.Euler(angle, 0f, 0f);
-//     }
-// }
-
 using UnityEngine;
 
 public class SunMovement : MonoBehaviour
 {
-    public float dayDuration = 300f; // 5 minutes
+    public float dayDuration = 300f; // 5 minutes for a full day
+    public AnimationCurve sunPathCurve;
+
     private float elapsedTime = 0f;
 
     void Update()
@@ -30,13 +12,12 @@ public class SunMovement : MonoBehaviour
         elapsedTime += Time.deltaTime;
         if (elapsedTime > dayDuration)
         {
-            elapsedTime = 0f; // reset the cycle
+            elapsedTime = 0f;
         }
 
         float t = elapsedTime / dayDuration;
-        float easedT = Mathf.SmoothStep(0f, 1f, t);
-        float angle = Mathf.Lerp(-10f, 190f, easedT);
-
+        float curvedT = sunPathCurve.Evaluate(t);
+        float angle = Mathf.Lerp(-2f, 187f, curvedT);
         transform.rotation = Quaternion.Euler(angle, 0f, 0f);
     }
 }
