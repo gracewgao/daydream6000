@@ -6,7 +6,6 @@ Shader "Custom/CloudShader"
         _BlueNoise ("Blue Noise Texture", 2D) = "white" {}      // defines the dithering pattern
         _NoiseScale ("Noise Scale", Float) = 1.0                // scales the noise pattern
         _CloudDensity ("Cloud Density", Range(0, 6)) = 1.0      // controls the density of the cloud
-        _FadeStart ("Fade Start", Range(0.0, 1.0)) = 0.3        // start of the fade
         [Toggle]_DebugSDF ("Debug SDF", Integer) = 0            // enables debug mode for the SDF
         _SDFStrength ("SDF Strength", Range(1, 5)) = 3.0        // controls how closely the shape of the cloud follows the shape of the SDF
         _NoiseStrength ("Noise Strength", Range(0, 1)) = 0.3    // controls noise strength
@@ -14,7 +13,7 @@ Shader "Custom/CloudShader"
         _NoiseLacunarity ("Noise Lacunarity", Range(1, 5)) = 2.920
         _NoiseBias ("Noise Bias", Range(0.5, 3.0)) = 0.7
         _NoiseRange ("Noise Range", Range(0.5, 5.0)) = 1.0
-        _CloudSpeed ("Cloud Speed", Range(0, 5)) = 0.5          // controls speed of cloud animation
+        _AnimationSpeed ("Animation Speed", Range(0, 10)) = 0.5   // controls speed of cloud animation
         _SunDirection ("Sun Direction", Vector) = (1,0,0)       // controls direction of sun (as a unit vector in absolute world coordinates)
         _LightColor ("Light Color", Color) = (1,1,1,1)          // color of the directional light
         _ShadowStrength ("Shadow Strength", Range(0.1, 3.0)) = 1.0 // controls how dark the shadows get
@@ -61,8 +60,6 @@ Shader "Custom/CloudShader"
             float _NoiseScale;
             float _CloudDensity;
 
-            float _FadeStart;
-
             float _SDFStrength;
 
             float _NoiseStrength;
@@ -71,7 +68,7 @@ Shader "Custom/CloudShader"
             float _NoiseBias;
             float _NoiseRange;
 
-            float _CloudSpeed;
+            float _AnimationSpeed;
             bool _DebugSDF;
 
             float3 _SunDirection;
@@ -115,15 +112,8 @@ Shader "Custom/CloudShader"
                 ) * 2.0 * _NoiseRange - _NoiseRange + _NoiseBias; // apply custom range and bias to noise
             }
 
-            float3 getNoiseAnimationDirection() {
-                float3 viewDir = normalize(_WorldSpaceCameraPos - unity_ObjectToWorld[3].xyz);
-                float3 up = abs(viewDir.y) < 0.999 ? float3(0,1,0) : float3(1,0,0);
-                return normalize(cross(viewDir, up));
-            }
-
             float fbm(float3 p) {
-                float3 noiseAnimationDirection = getNoiseAnimationDirection();
-                float3 q = p + _Time.x * _CloudSpeed * noiseAnimationDirection;
+                float3 q = p + _Time.x * _AnimationSpeed;
 
                 float f = 0.0;
                 float amplitude = 0.5;
@@ -144,7 +134,6 @@ Shader "Custom/CloudShader"
                 float distance = sampleSDF(p);
                 float f = fbm(p);
 
-                float falloff = 1.0 - smoothstep(_FadeStart, 1.0, length(p));
                 float baseShape = -distance * _SDFStrength;
 
                 float noise = (f - _NoiseBias) * _NoiseStrength;
@@ -152,7 +141,7 @@ Shader "Custom/CloudShader"
                 
                 float cloudShape = max(0.0, baseShape + noise * blend);
 
-                return cloudShape * _CloudDensity * falloff;
+                return cloudShape * _CloudDensity;
             }
 
             float4 raymarch(float3 rayOrigin, float3 rayDirection, float offset)
@@ -249,7 +238,7 @@ Shader "Custom/CloudShader"
                 float redSunsetFactor = 1.0 - smoothstep(-0.1, 0.2, sunHeight);
                 
                 // Create sunset colors
-                float3 orangeSunsetColor = float3(1.3, 0.8, 0.3); // Warm orange
+                float3 orangeSunsetColor = float3(1.2, 0.9, 0.5); // Less saturated warm orange
                 float3 redSunsetColor = float3(1.4, 0.5, 0.2); // Deep red-orange
                 
                 float timeOffset = frac(_Time.y * 60);
