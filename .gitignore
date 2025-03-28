@@ -107,4 +107,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-# End of https://www.toptal.com/developers/gitignore/api/unity,macos
+# too big heehoo
+Assets/Scenes/Daydream/cloudgazing.wav
+Assets/Scenes/Daydream/cloudgazing.wav.meta
+
+# ignore changes due to lighting script
+Assets/Scenes/Daydream/Resources/Materials/*
