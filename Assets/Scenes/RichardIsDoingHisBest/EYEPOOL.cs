@@ -137,6 +137,16 @@ public class EyepoolCubeGenerator : MonoBehaviour
         //     hdCameraData.backgroundColorHDR = Color.magenta;
         // }
 
+        // HDAdditionalCameraData camData = cam.GetComponent<HDAdditionalCameraData>();
+        // if (camData != null) {
+        //     Debug.Log("made it");
+        //     LayerMask original = camData.volumeLayerMask;
+        //     camData.volumeLayerMask = 0;
+        //     camData.volumeLayerMask = original;
+        // }
+
+        // // Force HDRP to update the volume evaluation by "touching" the mask
+
         if (!camerasByDisplay.ContainsKey(displayPort))
             camerasByDisplay[displayPort] = new Dictionary<string, List<Camera>>();
         if (!camerasByDisplay[displayPort].ContainsKey(label))

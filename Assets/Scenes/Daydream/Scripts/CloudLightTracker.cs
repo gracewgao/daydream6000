@@ -26,7 +26,9 @@ public class CloudLightTracker : MonoBehaviour
             return;
             
         // only update if something relevant has changed
-        if (lastLightDirection != directionalLight.transform.forward || transform.parent != lastParent || transform.rotation != lastRotation)
+        if (lastLightDirection != directionalLight.transform.forward || 
+            transform.parent != lastParent || 
+            transform.rotation != lastRotation)
         {
             UpdateLightDirection();
         }
@@ -39,10 +41,14 @@ public class CloudLightTracker : MonoBehaviour
             // convert light direction to object space
             Vector3 lightDir = transform.InverseTransformDirection(-directionalLight.transform.forward);
             
-            // update shader
+            // update shader light direction
             objectRenderer.sharedMaterial.SetVector("_SunDirection", lightDir);
             
-            // cache values
+            // Pass the light color to the shader (without intensity)
+            Color lightColor = directionalLight.color;
+            objectRenderer.sharedMaterial.SetColor("_LightColor", lightColor);
+            
+            // Cache values
             lastLightDirection = directionalLight.transform.forward;
             lastParent = transform.parent;
             lastRotation = transform.rotation;
