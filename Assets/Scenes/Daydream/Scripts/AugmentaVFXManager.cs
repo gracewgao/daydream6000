@@ -11,7 +11,6 @@ public class AugmentaVFXManager : MonoBehaviour
 
     private Dictionary<int, GameObject> vfxInstances = new Dictionary<int, GameObject>();
     private Dictionary<int, VisualEffect> vfxComponents = new Dictionary<int, VisualEffect>();
-    private Dictionary<int, Vector3> previousPositions = new Dictionary<int, Vector3>();
 
     private float HEIGHT = 450f;
     private float LENGTH_SCALE = 24.6f / 8.84f;
@@ -37,8 +36,8 @@ public class AugmentaVFXManager : MonoBehaviour
 
         Vector3 currentPosition = new Vector3(
             augmentaObject.worldPosition3D.x * LENGTH_SCALE, 
-            augmentaObject.worldPosition2D.y + HEIGHT + 0.5f,
-            augmentaObject.worldPosition2D.z * WIDTH_SCALE
+            augmentaObject.worldPosition3D.y + HEIGHT + 0.5f,
+            augmentaObject.worldPosition3D.z * WIDTH_SCALE
         );
 
         if (!vfxInstances.ContainsKey(augmentaObject.oid))
@@ -55,7 +54,6 @@ public class AugmentaVFXManager : MonoBehaviour
             
             vfxInstances.Add(augmentaObject.oid, newVfxInstance);
             vfxComponents.Add(augmentaObject.oid, vfxComponent);
-            previousPositions.Add(augmentaObject.oid, currentPosition);
         }
         
         GameObject vfxInstance = vfxInstances[augmentaObject.oid];
@@ -63,8 +61,6 @@ public class AugmentaVFXManager : MonoBehaviour
         
         // set spawn position for new particles
         vfx.SetVector3("SpawnPosition", currentPosition);
-        
-        previousPositions[augmentaObject.oid] = currentPosition;
     }
 
     // Called when an object leaves the scene
@@ -80,7 +76,6 @@ public class AugmentaVFXManager : MonoBehaviour
             Destroy(vfxInstance);
             vfxInstances.Remove(augmentaObject.oid);
             vfxComponents.Remove(augmentaObject.oid);
-            previousPositions.Remove(augmentaObject.oid);
         }
     }
 }
