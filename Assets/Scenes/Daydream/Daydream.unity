@@ -150,6 +150,57 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &178203013
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 178203015}
+  - component: {fileID: 178203014}
+  m_Layer: 0
+  m_Name: MeshCloudManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &178203014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178203013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7e822f067a2742498269372359a890b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialCloudCount: 1
+  eyepoolCube: {fileID: 1399135383}
+  startingY: 445
+  outerSize: {x: 30, y: 20, z: 30}
+  outerCenter: {x: 0, y: 455, z: 0}
+  scale: 5
+  innerCenter: {x: 0, y: 455, z: 0}
+--- !u!4 &178203015
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178203013}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.2039175, y: 0, z: 0.25522804}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &208333787
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1229,7 +1280,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 7bae5aad213fb48ba8e6f146ac0e5e5f, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 7bae5aad213fb48ba8e6f146ac0e5e5f, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -1992,3 +2043,4 @@ SceneRoots:
   - {fileID: 1152394638}
   - {fileID: 1510751287}
   - {fileID: 870029608}
+  - {fileID: 178203015}
