@@ -1108,12 +1108,12 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.27805364
-      outSlope: 0.27805364
+      inSlope: 0.47238424
+      outSlope: 0.47238424
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.92590266
+      outWeight: 0.52553815
     - serializedVersion: 3
       time: 0.25650644
       value: 0.1018808
@@ -1125,7 +1125,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 0.74490696
-      value: 0.9035269
+      value: 0.9058844
       inSlope: 0.5614593
       outSlope: 0.5614593
       tangentMode: 0
@@ -1135,11 +1135,11 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0.28301898
-      outSlope: 0.28301898
+      inSlope: 0.4548886
+      outSlope: 0.4548886
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.78402764
+      inWeight: 0.52845013
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -1178,6 +1178,10 @@ MonoBehaviour:
   wallHeight: 10.8
   floorWidth: 2.97
   floorLength: 3.69
+  displayPortFrontBack: 0
+  displayPortLeftRight: 1
+  displayPortFloor1: 2
+  displayPortFloor2: 3
   Mat1: {fileID: 2100000, guid: e3dbc51e9411d4343be2e39ac8dc4b6a, type: 2}
   Mat2: {fileID: 2100000, guid: 018e08a8678664e94a15a5762b905365, type: 2}
   Mat3: {fileID: 2100000, guid: bebcf80fd9fb54718949c1ec6ed1b846, type: 2}

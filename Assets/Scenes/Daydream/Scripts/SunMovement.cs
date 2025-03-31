@@ -17,7 +17,7 @@ public class SunMovement : MonoBehaviour
 
         float t = elapsedTime / dayDuration;
         float curvedT = sunPathCurve.Evaluate(t);
-        float angle = Mathf.Lerp(-2f, 187f, curvedT);
+        float angle = Mathf.Lerp(-2f, 182f, curvedT);
         transform.rotation = Quaternion.Euler(angle, 0f, 0f);
     }
 }

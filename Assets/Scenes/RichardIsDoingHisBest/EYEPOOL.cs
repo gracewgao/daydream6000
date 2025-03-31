@@ -12,6 +12,11 @@ public class EyepoolCubeGenerator : MonoBehaviour
     public float floorWidth = 2.97f;
     public float floorLength = 3.69f;
 
+    public int displayPortFrontBack = 0;
+    public int displayPortLeftRight = 1;
+    public int displayPortFloor1 = 2;
+    public int displayPortFloor2 = 3;
+
     private Dictionary<int, Dictionary<string, List<Camera>>> camerasByDisplay = new Dictionary<int, Dictionary<string, List<Camera>>>();
 
     public Material Mat1;
@@ -38,7 +43,7 @@ public class EyepoolCubeGenerator : MonoBehaviour
         CreateWall(new Vector3(0, 450 + wallHeight / 2, -wallWidth / 2), Quaternion.Euler(90, 0, 0), displayPort: 0, "Back");
         CreateWall(new Vector3(wallLength / 2, 450 + wallHeight / 2, 0), Quaternion.Euler(90, 0, 90), displayPort: 1, "Right");
         CreateWall(new Vector3(-wallLength / 2, 450 + wallHeight / 2, 0), Quaternion.Euler(90, 0, -90), displayPort: 1, "Left");
-        
+
         // Set up the cameras
         SetupCameras();
 
@@ -53,19 +58,28 @@ public class EyepoolCubeGenerator : MonoBehaviour
         wall.transform.rotation = rotation;
         wall.name = label;  // Naming for debugging
 
-        if (label == "Front") {
+        if (label == "Front")
+        {
             wall.transform.localScale = new Vector3(wallLength / 10, 450, wallHeight / 10);
             wall.GetComponent<Renderer>().material = Mat1;
-        } else if (label == "Back") {
+        }
+        else if (label == "Back")
+        {
             wall.transform.localScale = new Vector3(wallLength / 10, 450, wallHeight / 10);
             wall.GetComponent<Renderer>().material = Mat3;
-        } else if (label == "Right") {
+        }
+        else if (label == "Right")
+        {
             wall.transform.localScale = new Vector3(wallWidth / 10, 450, wallHeight / 10);
             wall.GetComponent<Renderer>().material = Mat2;
-        } else if (label == "Left") {
+        }
+        else if (label == "Left")
+        {
             wall.transform.localScale = new Vector3(wallWidth / 10, 450, wallHeight / 10);
             wall.GetComponent<Renderer>().material = Mat4;
-        } else { // Floor
+        }
+        else
+        { // Floor
             wall.transform.localScale = new Vector3(floorLength * 2 / 3, 450, floorWidth * 2 / 3);
             wall.GetComponent<Renderer>().material = FloorMat;
         }
@@ -73,11 +87,6 @@ public class EyepoolCubeGenerator : MonoBehaviour
 
     void SetupCameras()
     {
-        int displayPortFrontBack = 0;
-        int displayPortLeftRight = 1;
-        int displayPortFloor1 = 2;
-        int displayPortFloor2 = 3;
-
         // Walls
         Vector3 rightWallLeftQuadrant = new Vector3(-7.47f, 455.4f, -7.2f);
         Vector3 rightWallRightQuadrant = new Vector3(-7.47f, 455.4f, 7.2f);
@@ -108,7 +117,7 @@ public class EyepoolCubeGenerator : MonoBehaviour
         CreateCamera(backWallLeftQuadrant, right, Quaternion.Euler(0, 0, 0), "BackCamera", displayPortLeftRight);
         CreateCamera(rightWallLeftQuadrant, right, Quaternion.Euler(0, -90, 0), "RightCamera", displayPortFrontBack);
         CreateCamera(leftWallLeftQuadrant, right, Quaternion.Euler(0, 90, 0), "LeftCamera", displayPortLeftRight);
-        
+
         CreateCamera(frontWallRightQuadrant, left, Quaternion.Euler(0, 180, 0), "FrontCamera", displayPortFrontBack);
         CreateCamera(backWallRightQuadrant, left, Quaternion.Euler(0, 0, 0), "BackCamera", displayPortLeftRight);
         CreateCamera(rightWallRightQuadrant, left, Quaternion.Euler(0, -90, 0), "RightCamera", displayPortFrontBack);
@@ -118,7 +127,7 @@ public class EyepoolCubeGenerator : MonoBehaviour
         CreateCamera(floorBottomRightQuadrant, right, Quaternion.Euler(90, 0, 0), "FloorCameraMid", displayPortFloor1);
         CreateCamera(floorTopLeftQuadrant1, left, Quaternion.Euler(90, 0, 0), "FloorCameraUp", displayPortFloor1);
         CreateCamera(floorBottomLeftQuadrant, left, Quaternion.Euler(90, 0, 0), "FloorCameraMid", displayPortFloor1);
-        
+
         CreateCamera(floorTopRightQuadrant2, right, Quaternion.Euler(90, 0, 0), "FloorCameraDown", displayPortFloor2);
         CreateCamera(floorTopLeftQuadrant2, left, Quaternion.Euler(90, 0, 0), "FloorCameraDown", displayPortFloor2);
     }
@@ -173,14 +182,20 @@ public class EyepoolCubeGenerator : MonoBehaviour
     {
         foreach (var displayDict in camerasByDisplay)
         {
+            // skip refresh if key is equal to displayPortFloor1 or displayPortFloor2
+            if (displayDict.Key == displayPortFloor1 || displayDict.Key == displayPortFloor2)
+            {
+                continue;
+            }
+
             foreach (var cameraList in displayDict.Value)
             {
                 foreach (Camera cam in cameraList.Value)
-                {   
+                {
                     // Select the camera in the editor (simulates clicking)
-                    #if UNITY_EDITOR
+#if UNITY_EDITOR
                     UnityEditor.Selection.activeGameObject = cam.gameObject;
-                    #endif
+#endif
 
                     yield return null;
                 }
