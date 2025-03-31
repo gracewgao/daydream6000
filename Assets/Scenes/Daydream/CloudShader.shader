@@ -5,8 +5,7 @@ Shader "Custom/CloudShader"
         _SDFTex ("SDF Texture", 3D) = "white" {}                // defines the shape of the cloud
         _BlueNoise ("Blue Noise Texture", 2D) = "white" {}      // defines the dithering pattern
         _NoiseScale ("Noise Scale", Float) = 1.0                // scales the noise pattern
-        _CloudDensity ("Cloud Density", Range(0, 2)) = 1.0      // controls the density of the cloud
-        _FadeStart ("Fade Start", Range(0.0, 1.0)) = 0.3        // start of the fade
+        _CloudDensity ("Cloud Density", Range(0, 6)) = 1.0      // controls the density of the cloud
         [Toggle]_DebugSDF ("Debug SDF", Integer) = 0            // enables debug mode for the SDF
         _SDFStrength ("SDF Strength", Range(1, 5)) = 3.0        // controls how closely the shape of the cloud follows the shape of the SDF
         _NoiseStrength ("Noise Strength", Range(0, 1)) = 0.3    // controls noise strength
@@ -14,8 +13,10 @@ Shader "Custom/CloudShader"
         _NoiseLacunarity ("Noise Lacunarity", Range(1, 5)) = 2.920
         _NoiseBias ("Noise Bias", Range(0.5, 3.0)) = 0.7
         _NoiseRange ("Noise Range", Range(0.5, 5.0)) = 1.0
-        _CloudSpeed ("Cloud Speed", Range(0, 5)) = 0.5          // controls speed of cloud animation
+        _AnimationSpeed ("Animation Speed", Range(0, 10)) = 0.5   // controls speed of cloud animation
         _SunDirection ("Sun Direction", Vector) = (1,0,0)       // controls direction of sun (as a unit vector in absolute world coordinates)
+        _LightColor ("Light Color", Color) = (1,1,1,1)          // color of the directional light
+        _ShadowStrength ("Shadow Strength", Range(0.1, 3.0)) = 1.0 // controls how dark the shadows get
     }
     
     SubShader
@@ -59,8 +60,6 @@ Shader "Custom/CloudShader"
             float _NoiseScale;
             float _CloudDensity;
 
-            float _FadeStart;
-
             float _SDFStrength;
 
             float _NoiseStrength;
@@ -69,10 +68,12 @@ Shader "Custom/CloudShader"
             float _NoiseBias;
             float _NoiseRange;
 
-            float _CloudSpeed;
+            float _AnimationSpeed;
             bool _DebugSDF;
 
             float3 _SunDirection;
+            float4 _LightColor;
+            float _ShadowStrength;
             
             #define MAX_STEPS 100
             #define MARCH_SIZE 0.1
@@ -111,15 +112,8 @@ Shader "Custom/CloudShader"
                 ) * 2.0 * _NoiseRange - _NoiseRange + _NoiseBias; // apply custom range and bias to noise
             }
 
-            float3 getNoiseAnimationDirection() {
-                float3 viewDir = normalize(_WorldSpaceCameraPos - unity_ObjectToWorld[3].xyz);
-                float3 up = abs(viewDir.y) < 0.999 ? float3(0,1,0) : float3(1,0,0);
-                return normalize(cross(viewDir, up));
-            }
-
             float fbm(float3 p) {
-                float3 noiseAnimationDirection = getNoiseAnimationDirection();
-                float3 q = p + _Time.x * _CloudSpeed * noiseAnimationDirection;
+                float3 q = p + _Time.x * _AnimationSpeed;
 
                 float f = 0.0;
                 float amplitude = 0.5;
@@ -140,7 +134,6 @@ Shader "Custom/CloudShader"
                 float distance = sampleSDF(p);
                 float f = fbm(p);
 
-                float falloff = 1.0 - smoothstep(_FadeStart, 1.0, length(p));
                 float baseShape = -distance * _SDFStrength;
 
                 float noise = (f - _NoiseBias) * _NoiseStrength;
@@ -148,7 +141,7 @@ Shader "Custom/CloudShader"
                 
                 float cloudShape = max(0.0, baseShape + noise * blend);
 
-                return cloudShape * _CloudDensity * falloff;
+                return cloudShape * _CloudDensity;
             }
 
             float4 raymarch(float3 rayOrigin, float3 rayDirection, float offset)
@@ -173,6 +166,7 @@ Shader "Custom/CloudShader"
                 depth += MARCH_SIZE * offset;
                 float3 p = rayOrigin + depth * rayDirection;
 
+                // Make sure the sun direction is properly normalized
                 float3 sunDirection = normalize(_SunDirection);
                 
                 float4 res = float4(0.0, 0.0, 0.0, 0.0);
@@ -183,10 +177,22 @@ Shader "Custom/CloudShader"
                     
                     if (density > 0.0)
                     {
+                        // Original diffuse calculation
                         float diffuse = clamp((scene(p) - scene(p + 0.3 * sunDirection)) / 0.3, 0.0, 1.0);
-                        float3 lin = float3(0.60, 0.60, 0.75) * 1.1 + 0.8 * float3(1.0, 0.6, 0.3) * diffuse;
+                        diffuse *= _ShadowStrength; // Apply shadow strength
+                        
+                        // Add ambient term to prevent shadows from being too dark
+                        float ambient = 0.3; // Minimum light level
+                        float lightFactor = ambient + diffuse * (1.0 - ambient);
+                        
+                        // Use light factor for lighting
+                        float3 lin = lightFactor * float3(1.0, 1.0, 1.0);
+                        
+                        // Original density visualization
                         float visualDensity = 1.0 - pow(1.0 - min(density, 1.0), 0.5); // Compress the density curve
                         float4 color = float4(lerp(float3(1.0, 1.0, 1.0), float3(0.5, 0.5, 0.5), visualDensity), density);
+                        
+                        // Apply lighting
                         color.rgb *= lin;
                         color.rgb *= color.a;
                         res += color * (1.0 - res.a);
@@ -216,12 +222,38 @@ Shader "Custom/CloudShader"
             {
                 float3 ro = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0)).xyz;
                 float3 rd = normalize(i.objectPos - ro);
-
+                
+                // Get sun direction in world space for sunset calculation
+                float3 worldSunDir = normalize(mul((float3x3)unity_ObjectToWorld, _SunDirection));
+                
+                // Calculate sun height (dot product with up vector)
+                float sunHeight = dot(worldSunDir, float3(0, 1, 0));
+                
+                // Create two sunset factors for different angle ranges
+                // Mid-angle sunset (orange tones) - active when sun is at medium-low height
+                float orangeSunsetFactor = 1.0 - smoothstep(0.2, 0.5, sunHeight);
+                orangeSunsetFactor *= smoothstep(-0.1, 0.2, sunHeight); // Fade out when sun gets too low
+                
+                // Low-angle sunset (red tones) - active when sun is very low
+                float redSunsetFactor = 1.0 - smoothstep(-0.1, 0.2, sunHeight);
+                
+                // Create sunset colors
+                float3 orangeSunsetColor = float3(1.2, 0.9, 0.5); // Less saturated warm orange
+                float3 redSunsetColor = float3(1.4, 0.5, 0.2); // Deep red-orange
+                
                 float timeOffset = frac(_Time.y * 60);
                 float blueNoise = tex2D(_BlueNoise, i.screenPos.xy / i.screenPos.w * _ScreenParams.xy / 1024.0).r;
                 float offset = frac(blueNoise + timeOffset);
 
                 float4 res = raymarch(ro, rd, offset);
+                
+                // Apply the directional light's color to the cloud with multi-stage sunset
+                float3 adjustedLightColor = _LightColor.rgb;
+                // Apply orange sunset color at medium-low angles
+                adjustedLightColor = lerp(adjustedLightColor, adjustedLightColor * orangeSunsetColor, orangeSunsetFactor);
+                // Apply red sunset color at very low angles
+                adjustedLightColor = lerp(adjustedLightColor, adjustedLightColor * redSunsetColor, redSunsetFactor);
+                res.rgb *= adjustedLightColor;
                 
                 // Create a softer edge falloff & apply to alpha 
                 res.a *= smoothstep(0.0, 0.15, res.a);

@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Rendering.HighDefinition;
+using System.Collections;
+using UnityEditor;
 
 public class EyepoolCubeGenerator : MonoBehaviour
 {
@@ -17,6 +19,7 @@ public class EyepoolCubeGenerator : MonoBehaviour
     public Material Mat3;
     public Material Mat4;
     public Material FloorMat;
+
 
     void Start()
     {
@@ -38,6 +41,9 @@ public class EyepoolCubeGenerator : MonoBehaviour
         
         // Set up the cameras
         SetupCameras();
+
+        // Refresh cameras to ensure they are set up correctly
+        StartCoroutine(RefreshCameras());
     }
 
     void CreateWall(Vector3 position, Quaternion rotation, int displayPort, string label)
@@ -127,26 +133,6 @@ public class EyepoolCubeGenerator : MonoBehaviour
         cam.fieldOfView = CalculateFOVForPosition(position);
         cam.aspect = 16f / 9f;
 
-        // HDAdditionalCameraData hdCameraData = cam.GetComponent<Environment>();
-        // if (hdCameraData != null)
-        // {
-        //     // This controls how the camera clears the screen. In HDRP, "Color" is the equivalent of a solid color clear.
-        //     hdCameraData.clearColorMode = HDAdditionalCameraData.ClearColorMode.Color;
-
-        //     // Sets the actual color used when clearing the background.
-        //     hdCameraData.backgroundColorHDR = Color.magenta;
-        // }
-
-        // HDAdditionalCameraData camData = cam.GetComponent<HDAdditionalCameraData>();
-        // if (camData != null) {
-        //     Debug.Log("made it");
-        //     LayerMask original = camData.volumeLayerMask;
-        //     camData.volumeLayerMask = 0;
-        //     camData.volumeLayerMask = original;
-        // }
-
-        // // Force HDRP to update the volume evaluation by "touching" the mask
-
         if (!camerasByDisplay.ContainsKey(displayPort))
             camerasByDisplay[displayPort] = new Dictionary<string, List<Camera>>();
         if (!camerasByDisplay[displayPort].ContainsKey(label))
@@ -187,5 +173,23 @@ public class EyepoolCubeGenerator : MonoBehaviour
     {
         // return dimensions of the LxWxH vector
         return new Vector3(wallLength, wallHeight, wallWidth);
+        
+    IEnumerator RefreshCameras()
+    {
+        foreach (var displayDict in camerasByDisplay)
+        {
+            foreach (var cameraList in displayDict.Value)
+            {
+                foreach (Camera cam in cameraList.Value)
+                {   
+                    // Select the camera in the editor (simulates clicking)
+                    #if UNITY_EDITOR
+                    UnityEditor.Selection.activeGameObject = cam.gameObject;
+                    #endif
+
+                    yield return null;
+                }
+            }
+        }
     }
 }
