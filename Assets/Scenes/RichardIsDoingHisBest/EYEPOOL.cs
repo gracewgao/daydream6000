@@ -179,7 +179,7 @@ public class EyepoolCubeGenerator : MonoBehaviour
     }
 
     public Vector3 GetEyepoolCubeSize() {
-        return new Vector3(wallLength, wallWidth, wallHeight);
+        return new Vector3(wallLength, wallHeight, wallWidth);
     }
 
     IEnumerator RefreshCameras()

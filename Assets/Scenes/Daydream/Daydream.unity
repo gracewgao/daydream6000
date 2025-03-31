@@ -179,13 +179,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7e822f067a2742498269372359a890b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialCloudCount: 1
+  initialCloudCount: 20
   eyepoolCube: {fileID: 1399135383}
-  startingY: 445
-  outerSize: {x: 30, y: 20, z: 30}
-  outerCenter: {x: 0, y: 455, z: 0}
+  startingY: 410
+  outerSize: {x: 50, y: 50, z: 50}
+  outerCenter: {x: 0, y: 410, z: 0}
   scale: 5
-  innerCenter: {x: 0, y: 455, z: 0}
+  innerCenter: {x: 0, y: 410, z: 0}
 --- !u!4 &178203015
 Transform:
   m_ObjectHideFlags: 0
@@ -1206,7 +1206,7 @@ GameObject:
   - component: {fileID: 1399135384}
   - component: {fileID: 1399135383}
   m_Layer: 6
-  m_Name: cubegenerator
+  m_Name: EYEPOOL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
