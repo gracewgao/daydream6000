@@ -72,6 +72,7 @@ Shader "Custom/CloudShader"
             bool _DebugSDF;
 
             float3 _SunDirection;
+            float3 _GlobalSunDirection;
             float4 _LightColor;
             float _ShadowStrength;
             
@@ -166,8 +167,8 @@ Shader "Custom/CloudShader"
                 depth += MARCH_SIZE * offset;
                 float3 p = rayOrigin + depth * rayDirection;
 
-                // Transform sun direction from world space to object space for proper shadow rotation
-                float3 sunDirection = normalize(mul((float3x3)unity_WorldToObject, _SunDirection));
+                // Use the object-space sun direction for shadows
+                float3 sunDirection = normalize(_SunDirection);
                 
                 float4 res = float4(0.0, 0.0, 0.0, 0.0);
                 
@@ -223,19 +224,24 @@ Shader "Custom/CloudShader"
                 float3 ro = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0)).xyz;
                 float3 rd = normalize(i.objectPos - ro);
                 
-                // Get sun direction in world space for sunset calculation
-                float3 worldSunDir = normalize(mul((float3x3)unity_ObjectToWorld, _SunDirection));
+                // Use the global sun direction for sunset calculation
+                // This ensures all clouds have the same sunset coloring regardless of position
+                float3 globalSunDir = normalize(_GlobalSunDirection);
                 
-                // Calculate sun height (dot product with up vector)
-                float sunHeight = dot(worldSunDir, float3(0, 1, 0));
+                // Calculate sun height (dot product with global up vector)
+                float sunHeight = dot(globalSunDir, float3(0, 1, 0));
+                
+                // Debug visualization - uncomment to see the sun height value
+                // return float4(sunHeight * 0.5 + 0.5, 0, 0, 1.0); // Remap -1...1 to 0...1 for red channel
                 
                 // Create two sunset factors for different angle ranges
                 // Mid-angle sunset (orange tones) - active when sun is at medium-low height
                 float orangeSunsetFactor = 1.0 - smoothstep(0.2, 0.5, sunHeight);
-                orangeSunsetFactor *= smoothstep(-0.1, 0.2, sunHeight); // Fade out when sun gets too low
+                orangeSunsetFactor *= smoothstep(0.0, 0.2, sunHeight); // Fade out when sun gets too low
                 
-                // Low-angle sunset (red tones) - active when sun is very low
-                float redSunsetFactor = 1.0 - smoothstep(-0.1, 0.2, sunHeight);
+                // Low-angle sunset (red tones) - active when sun is very low on horizon
+                // Increased range to show more red effect
+                float redSunsetFactor = 1.0 - smoothstep(0.0, 0.3, sunHeight);
                 
                 // Create sunset colors
                 float3 orangeSunsetColor = float3(1.2, 0.9, 0.5); // Less saturated warm orange
