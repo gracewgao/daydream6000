@@ -12,14 +12,14 @@ public class CloudSystem : MonoBehaviour
     public EyepoolCubeGenerator eyepoolCube;
 
     // outer bounding box for cloud region
-    public float startingY = 410f;
+    public float startingY = 490;
     public Vector3 outerSize = new Vector3(30f, 50f, 30f);
-    public Vector3 outerCenter = new Vector3(0f, 410f, 0f);
+    public Vector3 outerCenter = new Vector3(0f, 0f, 0f);
 
     public float scale = 5f;
 
     // inner bounding box for cloud region that must be excluded (clouds only)
-    public Vector3 innerCenter = new Vector3(0f, 410f, 0f);
+    public Vector3 innerCenter = new Vector3(0f, 0f, 0f);
 
     // keep track of spawned clouds
     private List<Cloud> cloudCollection = new List<Cloud>();

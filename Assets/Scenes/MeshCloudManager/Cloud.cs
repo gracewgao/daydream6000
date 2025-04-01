@@ -45,7 +45,7 @@ public class Cloud : MonoBehaviour
 
         // derive movement parameters from the position
         // e.g., distance from the center point.
-        Vector3 center = new Vector3(0f, 410f, 0f); // center point
+        Vector3 center = new Vector3(0f, 490f, 0f); // center point
         float dist = Vector3.Distance(spawnPos, center);
 
         // example formula: movementSpeed is 0.05f + some fraction of 'dist'
