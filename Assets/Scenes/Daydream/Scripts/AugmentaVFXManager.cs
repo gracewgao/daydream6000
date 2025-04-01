@@ -73,6 +73,8 @@ public class AugmentaVFXManager : MonoBehaviour
         
         // set spawn position for new particles
         vfx.SetVector3("SpawnPosition", currentPosition);
+
+        previousPositions[augmentaObject.oid] = currentPosition;
     }
 
     // Called when an object leaves the scene
