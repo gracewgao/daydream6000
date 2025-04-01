@@ -77,11 +77,8 @@ public class Cloud : MonoBehaviour
     /// </summary>
     public void UpdateCloud()
     {
-        Debug.Log($"current position: {transform.position}");
-        Debug.Log($"current state: {currentState}");
-        if (transform.position.y >= 510f) {
-            movementSpeed = 0.0f;
-        }
+        // Debug.Log($"current position: {transform.position}");
+        // Debug.Log($"current state: {currentState}");
 
         switch (currentState)
         {

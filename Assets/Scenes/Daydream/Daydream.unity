@@ -179,10 +179,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7e822f067a2742498269372359a890b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialCloudCount: 5
+  initialCloudCount: 2
   eyepoolCube: {fileID: 1399135383}
-  startingY: 0
-  outerSize: {x: 50, y: 50, z: 50}
+  startingY: 420
+  outerSize: {x: 50, y: 70, z: 50}
   outerCenter: {x: 0, y: 410, z: 0}
   scale: 5
   innerCenter: {x: 0, y: 410, z: 0}
@@ -195,11 +195,11 @@ Transform:
   m_GameObject: {fileID: 178203013}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 18.104912, y: -910, z: 9.771059}
+  m_LocalPosition: {x: -0.20391846, y: -420, z: 0.25522804}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1508318807}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &208333787
 PrefabInstance:
@@ -3883,12 +3883,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1320751203}
   - {fileID: 339708252}
   - {fileID: 2070112049}
   - {fileID: 1966229675}
   - {fileID: 1152394638}
-  - {fileID: 1320751203}
-  - {fileID: 178203015}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1510751285
@@ -3918,7 +3917,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 7bae5aad213fb48ba8e6f146ac0e5e5f, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 7bae5aad213fb48ba8e6f146ac0e5e5f, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -5613,5 +5612,6 @@ SceneRoots:
   - {fileID: 1399135384}
   - {fileID: 1510751287}
   - {fileID: 870029608}
+  - {fileID: 178203015}
   - {fileID: 1508318807}
   - {fileID: 531788007}
