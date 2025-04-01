@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class CloudSystem : MonoBehaviour
@@ -13,7 +14,7 @@ public class CloudSystem : MonoBehaviour
 
     // outer bounding box for cloud region
     public float startingY = 490;
-    public Vector3 outerSize = new Vector3(30f, 50f, 30f);
+    public Vector3 outerSize = new Vector3(30f, 70f, 30f);
     public Vector3 outerCenter = new Vector3(0f, 0f, 0f);
 
     public float scale = 5f;
@@ -29,10 +30,26 @@ public class CloudSystem : MonoBehaviour
         outerCenter = new Vector3(0f, startingY, 0f);
         innerCenter = new Vector3(0f, startingY, 0f);
         // spawn initial clouds
-        for (int i = 0; i < initialCloudCount; i++)
+        StartCoroutine(CloudSpawnLoop());
+    }
+
+    IEnumerator CloudSpawnLoop()
+    {
+        // Then, continuously spawn clouds with delays
+        while (true)
         {
+            float delay = Random.Range(1f, 5f); // tweak this as you like
+            yield return new WaitForSeconds(delay);
             SpawnCloud();
         }
+    }
+
+    IEnumerator DelayedSpawnCloud(float delaySeconds)
+    {
+        // Debug.Log($"delaySeconds: {delaySeconds}");
+        yield return new WaitForSeconds(delaySeconds);
+        // Debug.Log($"waited for delaySeconds: {delaySeconds}");
+        SpawnCloud();
     }
 
     void Update()
@@ -51,11 +68,14 @@ public class CloudSystem : MonoBehaviour
                 // WrapAroundBoundingBox(cloud);
                 if (insideInner(position) || outsideOuter(position))
                 {
+                    Debug.Log("deleting clouds and replacing");
                     Destroy(cloud.gameObject);
                     cloudCollection.RemoveAt(i);
 
                     // once destroyed, spawn a new cloud to replace it
-                    SpawnCloud();
+                    float delaySeconds = Random.Range(0f, 10f);
+                    StartCoroutine(DelayedSpawnCloud(delaySeconds));
+                    Debug.Log("replaced clouds");
                 }
             }
         }
@@ -72,6 +92,7 @@ public class CloudSystem : MonoBehaviour
 
         // add our Cloud script
         Cloud newCloud = cloudGO.AddComponent<Cloud>();
+        CloudLightTracker tracker = cloudGO.AddComponent<CloudLightTracker>();
 
         // get a random position in the "outer" box that is NOT inside the "inner" box
         Vector3 spawnPos = GetRandomPositionExcludingInner();
@@ -110,9 +131,10 @@ public class CloudSystem : MonoBehaviour
     /// If random point falls inside the inner box, keep trying until it’s outside.
 
     private bool insideInner(Vector3 position) {
+        Debug.Log("inside Inner");
         Vector3 innerSize = eyepoolCube.GetEyepoolCubeSize();
         Vector3 halfInner = innerSize / 2f;
-        Debug.Log($"Inner Center: {innerCenter}");
+        // Debug.Log($"Inner Center: {innerCenter}");
         Vector3 minInner = innerCenter - halfInner;
         Vector3 maxInner = innerCenter + halfInner;
         Debug.Log($"Inner Min:{minInner}, Max:{maxInner}");
@@ -126,9 +148,10 @@ public class CloudSystem : MonoBehaviour
     }
 
     private bool outsideOuter(Vector3 position) {
+        Debug.Log("outside Outer");
         Vector3 minBounds = outerCenter - outerSize / 2f;
         Vector3 maxBounds = outerCenter + outerSize / 2f;
-        Debug.Log($"Outer Center: {outerCenter}");
+        // Debug.Log($"Outer Center: {outerCenter}");
         Debug.Log($"Outer Min:{minBounds}, Max:{maxBounds}");
 
         bool outsideOuter = 

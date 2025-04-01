@@ -13,6 +13,7 @@ Shader "Custom/CloudShader"
         _NoiseLacunarity ("Noise Lacunarity", Range(1, 5)) = 2.920
         _NoiseBias ("Noise Bias", Range(0.5, 3.0)) = 0.7
         _NoiseRange ("Noise Range", Range(0.5, 5.0)) = 1.0
+        _CloudFatness ("Cloud Fatness", Range(0, 0.5)) = 0.1    // controls how fat the clouds are
         _AnimationSpeed ("Animation Speed", Range(0, 10)) = 0.5   // controls speed of cloud animation
         _SunDirection ("Sun Direction", Vector) = (1,0,0)       // controls direction of sun (as a unit vector in absolute world coordinates)
         _LightColor ("Light Color", Color) = (1,1,1,1)          // color of the directional light
@@ -67,11 +68,13 @@ Shader "Custom/CloudShader"
             float _NoiseLacunarity;
             float _NoiseBias;
             float _NoiseRange;
+            float _CloudFatness;
 
             float _AnimationSpeed;
             bool _DebugSDF;
 
             float3 _SunDirection;
+            float3 _GlobalSunDirection;
             float4 _LightColor;
             float _ShadowStrength;
             
@@ -129,21 +132,133 @@ Shader "Custom/CloudShader"
               return clamp(f, -10.0, 10.0);
             }
 
-            float scene(float3 p)
+            // Calculate the base shape from SDF
+            float calculateBaseShape(float3 p)
             {
                 float distance = sampleSDF(p);
-                float f = fbm(p);
-
-                float baseShape = -distance * _SDFStrength;
-
-                float noise = (f - _NoiseBias) * _NoiseStrength;
+                
+                // Calculate distance from center using a smoother metric
+                // This avoids the angular/cubic look from using min() on axis distances
+                float centerDist = length(p);
+                
+                // Calculate the maximum possible distance dynamically
+                // We use the fact that in normalized coordinates, the center is at (0,0,0)
+                // and the furthest point would be at a corner of the unit cube
+                float normalizedDist = centerDist / length(float3(0.5, 0.5, 0.5));
+                
+                // Invert so it's 1 at center, 0 at edges
+                float centerFactor = 1.0 - normalizedDist;
+                
+                // Apply smoothstep to control the falloff and create a more natural thickness gradient
+                // Use the CloudFatness property to control the amount of thickness
+                float fatFactor = smoothstep(0.0, 0.7, centerFactor) * _CloudFatness;
+                
+                // Apply the thickness by reducing the distance value
+                // This effectively expands the cloud shape
+                return -(distance - fatFactor) * _SDFStrength;
+            }
+            
+            // Calculate the final cloud shape with noise
+            float calculateCloudShape(float baseShape, float noiseValue)
+            {
+                float noise = (noiseValue - _NoiseBias) * _NoiseStrength;
                 float blend = smoothstep(-0.15, 0.25, baseShape);
                 
-                float cloudShape = max(0.0, baseShape + noise * blend);
+                return max(0.0, baseShape + noise * blend);
+            }
+            
+            float scene(float3 p)
+            {
+                float baseShape = calculateBaseShape(p);
+                float noiseValue = fbm(p);
+                float cloudShape = calculateCloudShape(baseShape, noiseValue);
 
                 return cloudShape * _CloudDensity;
             }
 
+            // Calculate cloud color at a specific point in the cloud
+            float4 calculateCloudColor(float3 p, float density, float3 sunDirection)
+            {
+                // Multi-sample shadow calculation for softer shadows
+                // Take multiple samples along the light direction and average them
+                float lightSampleDistance = 0.6; // Base distance for light sampling
+                float diffuse = 0.0;
+                
+                // Number of samples for soft shadows
+                const int shadowSamples = 4;
+                
+                // Take multiple samples with gradually increasing distances
+                for (int i = 0; i < shadowSamples; i++) {
+                    // Use progressively larger steps for each sample
+                    float stepSize = lightSampleDistance * (0.5 + float(i) / float(shadowSamples));
+                    float samplePoint = (scene(p) - scene(p + stepSize * sunDirection)) / stepSize;
+                    
+                    // Weight closer samples more heavily for a more natural falloff
+                    float weight = 1.0 - (float(i) / float(shadowSamples)) * 0.5;
+                    diffuse += clamp(samplePoint, 0.0, 1.0) * weight;
+                }
+                
+                // Normalize the weighted sum
+                diffuse /= shadowSamples * 0.75; // Adjust divisor to maintain overall brightness
+                diffuse *= _ShadowStrength; // Apply shadow strength
+                
+                // Increased ambient term for softer shadows
+                float ambient = 0.25; // Increased from 0.15 for softer shadows
+                float lightFactor = ambient + diffuse * (1.0 - ambient);
+                
+                // Add bluish-purple tinge to shadows
+                float3 shadowColor = float3(0.46, 0.43, 0.61); // Bluish-purple color
+                float3 sunlitColor = _LightColor.rgb;
+                
+                // Blend between shadow color and sunlit color based on light factor
+                // More shadow = more bluish-purple
+                float3 lin = lerp(shadowColor, sunlitColor, lightFactor);
+                
+                // Density visualization with light-dependent base color
+                float visualDensity = 1.0 - pow(1.0 - min(density, 1.0), 0.5); // Compress the density curve
+                // Base cloud color now depends on light intensity
+                float3 baseCloudColor = lerp(float3(0.8, 0.8, 0.8), float3(0.4, 0.4, 0.4), visualDensity);
+                float4 color = float4(baseCloudColor, density);
+                
+                // Apply lighting
+                color.rgb *= lin;
+                color.rgb *= color.a;
+                
+                return color;
+            }
+            
+            // Calculate sunset color based on sun position and height
+            float3 calculateSunsetColor(float3 globalSunDir, float3 baseLightColor)
+            {
+                // Calculate sun height (dot product with global up vector)
+                float sunHeight = dot(globalSunDir, float3(0, 1, 0));
+                
+                // Create two sunset factors for different angle ranges
+                // Mid-angle sunset (orange tones) - active when sun is at medium-low height
+                float orangeSunsetFactor = 1.0 - smoothstep(0.2, 0.5, sunHeight);
+                orangeSunsetFactor *= smoothstep(0.0, 0.2, sunHeight); // Fade out when sun gets too low
+                
+                // Low-angle sunset (red tones) - active when sun is very low on horizon
+                float redSunsetFactor = 1.0 - smoothstep(0.0, 0.25, sunHeight);
+                
+                // Create sunset colors
+                float3 orangeSunsetColor = float3(1.2, 0.9, 0.5); // Less saturated warm orange
+                float3 redSunsetColor = float3(1.4, 0.5, 0.2); // Deep red-orange
+                
+                // Apply the directional light's color with multi-stage sunset
+                float3 adjustedColor = baseLightColor;
+                // Apply orange sunset color at medium-low angles
+                adjustedColor = lerp(adjustedColor, adjustedColor * orangeSunsetColor, orangeSunsetFactor);
+                // Apply red sunset color at very low angles
+                adjustedColor = lerp(adjustedColor, adjustedColor * redSunsetColor, redSunsetFactor);
+                
+                // Apply additional darkening when sun becomes lower in the sky
+                float sunVisibility = smoothstep(-0.1, 0.05, sunHeight);
+                adjustedColor *= max(0.2, sunVisibility);
+                
+                return adjustedColor;
+            }
+            
             float4 raymarch(float3 rayOrigin, float3 rayDirection, float offset)
             {
                 if (_DebugSDF) {
@@ -166,7 +281,7 @@ Shader "Custom/CloudShader"
                 depth += MARCH_SIZE * offset;
                 float3 p = rayOrigin + depth * rayDirection;
 
-                // Make sure the sun direction is properly normalized
+                // Use the object-space sun direction for shadows
                 float3 sunDirection = normalize(_SunDirection);
                 
                 float4 res = float4(0.0, 0.0, 0.0, 0.0);
@@ -177,24 +292,7 @@ Shader "Custom/CloudShader"
                     
                     if (density > 0.0)
                     {
-                        // Original diffuse calculation
-                        float diffuse = clamp((scene(p) - scene(p + 0.3 * sunDirection)) / 0.3, 0.0, 1.0);
-                        diffuse *= _ShadowStrength; // Apply shadow strength
-                        
-                        // Add ambient term to prevent shadows from being too dark
-                        float ambient = 0.3; // Minimum light level
-                        float lightFactor = ambient + diffuse * (1.0 - ambient);
-                        
-                        // Use light factor for lighting
-                        float3 lin = lightFactor * float3(1.0, 1.0, 1.0);
-                        
-                        // Original density visualization
-                        float visualDensity = 1.0 - pow(1.0 - min(density, 1.0), 0.5); // Compress the density curve
-                        float4 color = float4(lerp(float3(1.0, 1.0, 1.0), float3(0.5, 0.5, 0.5), visualDensity), density);
-                        
-                        // Apply lighting
-                        color.rgb *= lin;
-                        color.rgb *= color.a;
+                        float4 color = calculateCloudColor(p, density, sunDirection);
                         res += color * (1.0 - res.a);
                     }
                     
@@ -223,23 +321,7 @@ Shader "Custom/CloudShader"
                 float3 ro = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0)).xyz;
                 float3 rd = normalize(i.objectPos - ro);
                 
-                // Get sun direction in world space for sunset calculation
-                float3 worldSunDir = normalize(mul((float3x3)unity_ObjectToWorld, _SunDirection));
-                
-                // Calculate sun height (dot product with up vector)
-                float sunHeight = dot(worldSunDir, float3(0, 1, 0));
-                
-                // Create two sunset factors for different angle ranges
-                // Mid-angle sunset (orange tones) - active when sun is at medium-low height
-                float orangeSunsetFactor = 1.0 - smoothstep(0.2, 0.5, sunHeight);
-                orangeSunsetFactor *= smoothstep(-0.1, 0.2, sunHeight); // Fade out when sun gets too low
-                
-                // Low-angle sunset (red tones) - active when sun is very low
-                float redSunsetFactor = 1.0 - smoothstep(-0.1, 0.2, sunHeight);
-                
-                // Create sunset colors
-                float3 orangeSunsetColor = float3(1.2, 0.9, 0.5); // Less saturated warm orange
-                float3 redSunsetColor = float3(1.4, 0.5, 0.2); // Deep red-orange
+                float3 globalSunDir = normalize(_GlobalSunDirection);
                 
                 float timeOffset = frac(_Time.y * 60);
                 float blueNoise = tex2D(_BlueNoise, i.screenPos.xy / i.screenPos.w * _ScreenParams.xy / 1024.0).r;
@@ -247,12 +329,9 @@ Shader "Custom/CloudShader"
 
                 float4 res = raymarch(ro, rd, offset);
                 
-                // Apply the directional light's color to the cloud with multi-stage sunset
-                float3 adjustedLightColor = _LightColor.rgb;
-                // Apply orange sunset color at medium-low angles
-                adjustedLightColor = lerp(adjustedLightColor, adjustedLightColor * orangeSunsetColor, orangeSunsetFactor);
-                // Apply red sunset color at very low angles
-                adjustedLightColor = lerp(adjustedLightColor, adjustedLightColor * redSunsetColor, redSunsetFactor);
+                // Get the sunset-adjusted light color
+                float3 adjustedLightColor = calculateSunsetColor(globalSunDir, _LightColor.rgb);
+                
                 res.rgb *= adjustedLightColor;
                 
                 // Create a softer edge falloff & apply to alpha 

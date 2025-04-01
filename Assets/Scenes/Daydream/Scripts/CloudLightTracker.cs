@@ -38,11 +38,15 @@ public class CloudLightTracker : MonoBehaviour
     {
         if (directionalLight != null && objectRenderer != null && objectRenderer.sharedMaterial != null)
         {
-            // convert light direction to object space
-            Vector3 lightDir = transform.InverseTransformDirection(-directionalLight.transform.forward);
+            // Convert light direction to object space for shadows
+            Vector3 objectSpaceSunDir = transform.InverseTransformDirection(-directionalLight.transform.forward);
             
-            // update shader light direction
-            objectRenderer.sharedMaterial.SetVector("_SunDirection", lightDir);
+            // Get the global sun direction for consistent sunset coloring
+            Vector3 globalSunDir = -directionalLight.transform.forward;
+            
+            // Update shader properties
+            objectRenderer.sharedMaterial.SetVector("_SunDirection", objectSpaceSunDir);
+            objectRenderer.sharedMaterial.SetVector("_GlobalSunDirection", globalSunDir);
             
             // Pass the light color to the shader (without intensity)
             Color lightColor = directionalLight.color;
