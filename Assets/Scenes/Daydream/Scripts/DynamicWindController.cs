@@ -64,15 +64,18 @@ public class DynamicWindController : MonoBehaviour
         }
 
         float avgSpeed = count > 0 ? totalSpeed / count : 0f;
+        // float targetSpeed = avgSpeed * windSpeedMultiplier;
+        // currentWindSpeed = Mathf.Lerp(currentWindSpeed, targetSpeed, 0.1f);
 
-        float targetSpeed = avgSpeed * windSpeedMultiplier;
-        float windSpeed = Mathf.Lerp(volumetricClouds.globalWindSpeed.value.customValue, targetSpeed, 0.7f);
+        float windSpeed = avgSpeed * windSpeedMultiplier;
+
+        // Debug.Log("Wind speed: " + windSpeed);
 
         // set wind speed
         volumetricClouds.globalWindSpeed.overrideState = true;
         WindParameter.WindParamaterValue windValue = new WindParameter.WindParamaterValue
         {
-            customValue = windSpeed + 30,
+            customValue = windSpeed + 10,
             mode = WindParameter.WindOverrideMode.Custom
         };
         volumetricClouds.globalWindSpeed.value = windValue;
