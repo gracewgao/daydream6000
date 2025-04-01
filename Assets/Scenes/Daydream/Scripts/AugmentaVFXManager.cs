@@ -29,7 +29,7 @@ public class AugmentaVFXManager : MonoBehaviour
         augmentaManager.augmentaObjectLeave -= OnAugmentaObjectLeave;
     }
 
-    public static bool ApproximatelyEqual(Vector3 a, Vector3 b, float tolerance = 0.25f)
+    public static bool ApproximatelyEqual(Vector3 a, Vector3 b, float tolerance = 0.05f)
     {
         return Vector3.Distance(a, b) <= tolerance;
     }
@@ -69,6 +69,7 @@ public class AugmentaVFXManager : MonoBehaviour
         // check if particles should spawn
         Vector3 previousPosition = previousPositions[augmentaObject.oid];
         bool isMoving = !ApproximatelyEqual(currentPosition, previousPosition);
+        Debug.LogError("curr position: " + currentPosition + " prev position: " + previousPosition + " isMoving: " + isMoving);
         vfx.SetBool("EnableSpawning", isMoving);
         
         // set spawn position for new particles
