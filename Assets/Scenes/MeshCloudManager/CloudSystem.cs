@@ -36,7 +36,7 @@ public class CloudSystem : MonoBehaviour
     IEnumerator CloudSpawnLoop()
     {
         // Then, continuously spawn clouds with delays
-        while (true)
+        for (int i = 0; i < initialCloudCount; i++)
         {
             float delay = Random.Range(1f, 5f); // tweak this as you like
             yield return new WaitForSeconds(delay);

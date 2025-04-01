@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7e822f067a2742498269372359a890b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialCloudCount: 2
+  initialCloudCount: 5
   eyepoolCube: {fileID: 1399135383}
   startingY: 420
   outerSize: {x: 50, y: 70, z: 50}
