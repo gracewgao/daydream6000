@@ -5651,7 +5651,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2526555843281886532, guid: da5118151f7564d298ab0e0511e3631a, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2526555843281886532, guid: da5118151f7564d298ab0e0511e3631a, type: 3}
       propertyPath: vfxPrefab
@@ -5671,7 +5671,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2884265955013929523, guid: da5118151f7564d298ab0e0511e3631a, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

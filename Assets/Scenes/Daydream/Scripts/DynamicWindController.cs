@@ -14,6 +14,7 @@ public class DynamicWindController : MonoBehaviour
 
     private VolumetricClouds volumetricClouds;
     private Dictionary<int, Vector3> lastPositions = new Dictionary<int, Vector3>();
+    private float timeSinceLastUpdate = 0f;
 
     void Start()
     {
@@ -26,6 +27,14 @@ public class DynamicWindController : MonoBehaviour
     void Update()
     {
         if (volumetricClouds == null || augmentaManager == null) return;
+
+        if (timeSinceLastUpdate < 1f)
+        {
+            timeSinceLastUpdate += Time.deltaTime;
+            return;
+        } else {
+            timeSinceLastUpdate = 0f;
+        }
 
         float totalSpeed = 0f;
         int count = 0;
@@ -55,7 +64,9 @@ public class DynamicWindController : MonoBehaviour
         }
 
         float avgSpeed = count > 0 ? totalSpeed / count : 0f;
-        float windSpeed = avgSpeed * windSpeedMultiplier;
+
+        float targetSpeed = avgSpeed * windSpeedMultiplier;
+        float windSpeed = Mathf.Lerp(volumetricClouds.globalWindSpeed.value.customValue, targetSpeed, 0.7f);
 
         // set wind speed
         volumetricClouds.globalWindSpeed.overrideState = true;
