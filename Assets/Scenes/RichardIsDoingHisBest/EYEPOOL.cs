@@ -38,7 +38,7 @@ public class EyepoolCubeGenerator : MonoBehaviour
         }
 
         // Create walls and floor (without cameras)
-        CreateWall(new Vector3(0, 450, 0), Quaternion.Euler(0, 0, 0), displayPort: 2, "Floor");
+        CreateWall(new Vector3(0, 450, 0), Quaternion.Euler(180, 0, 180), displayPort: 2, "Floor");
         CreateWall(new Vector3(0, 450 + wallHeight / 2, wallWidth / 2), Quaternion.Euler(90, 0, 180), displayPort: 0, "Front");
         CreateWall(new Vector3(0, 450 + wallHeight / 2, -wallWidth / 2), Quaternion.Euler(90, 0, 0), displayPort: 0, "Back");
         CreateWall(new Vector3(wallLength / 2, 450 + wallHeight / 2, 0), Quaternion.Euler(90, 0, 90), displayPort: 1, "Right");
