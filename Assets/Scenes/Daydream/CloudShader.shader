@@ -166,8 +166,8 @@ Shader "Custom/CloudShader"
                 depth += MARCH_SIZE * offset;
                 float3 p = rayOrigin + depth * rayDirection;
 
-                // Make sure the sun direction is properly normalized
-                float3 sunDirection = normalize(_SunDirection);
+                // Transform sun direction from world space to object space for proper shadow rotation
+                float3 sunDirection = normalize(mul((float3x3)unity_WorldToObject, _SunDirection));
                 
                 float4 res = float4(0.0, 0.0, 0.0, 0.0);
                 
