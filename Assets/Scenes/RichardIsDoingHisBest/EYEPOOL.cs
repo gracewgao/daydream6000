@@ -32,7 +32,7 @@ public class EyepoolCubeGenerator : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         // Activate all available displays
-        for (int i = 1; i < Display.displays.Length; i++)
+        for (int i = 0; i < Display.displays.Length; i++)
         {
             Display.displays[i].Activate();
         }
@@ -45,10 +45,10 @@ public class EyepoolCubeGenerator : MonoBehaviour
         CreateWall(new Vector3(-wallLength / 2, 450 + wallHeight / 2, 0), Quaternion.Euler(90, 0, -90), displayPort: 1, "Left");
 
         // Set up the cameras
-        SetupCameras();
+        // SetupCameras();
 
         // Refresh cameras to ensure they are set up correctly
-        StartCoroutine(RefreshCameras());
+        // StartCoroutine(RefreshCameras());
     }
 
     void CreateWall(Vector3 position, Quaternion rotation, int displayPort, string label)
@@ -193,9 +193,11 @@ public class EyepoolCubeGenerator : MonoBehaviour
                 foreach (Camera cam in cameraList.Value)
                 {
                     // Select the camera in the editor (simulates clicking)
-#if UNITY_EDITOR
-                    UnityEditor.Selection.activeGameObject = cam.gameObject;
-#endif
+                    GameObject myObject = GameObject.Find(cam.gameObject.name);
+                    Camera foundCamera = myObject.GetComponent<Camera>();
+
+                    foundCamera.enabled = false;
+                    foundCamera.enabled = true;
 
                     yield return null;
                 }
