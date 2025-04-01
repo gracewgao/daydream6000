@@ -13,6 +13,7 @@ Shader "Custom/CloudShader"
         _NoiseLacunarity ("Noise Lacunarity", Range(1, 5)) = 2.920
         _NoiseBias ("Noise Bias", Range(0.5, 3.0)) = 0.7
         _NoiseRange ("Noise Range", Range(0.5, 5.0)) = 1.0
+        _CloudFatness ("Cloud Fatness", Range(0, 0.5)) = 0.1    // controls how fat the clouds are
         _AnimationSpeed ("Animation Speed", Range(0, 10)) = 0.5   // controls speed of cloud animation
         _SunDirection ("Sun Direction", Vector) = (1,0,0)       // controls direction of sun (as a unit vector in absolute world coordinates)
         _LightColor ("Light Color", Color) = (1,1,1,1)          // color of the directional light
@@ -67,6 +68,7 @@ Shader "Custom/CloudShader"
             float _NoiseLacunarity;
             float _NoiseBias;
             float _NoiseRange;
+            float _CloudFatness;
 
             float _AnimationSpeed;
             bool _DebugSDF;
@@ -134,7 +136,26 @@ Shader "Custom/CloudShader"
             float calculateBaseShape(float3 p)
             {
                 float distance = sampleSDF(p);
-                return -distance * _SDFStrength;
+                
+                // Calculate distance from center using a smoother metric
+                // This avoids the angular/cubic look from using min() on axis distances
+                float centerDist = length(p);
+                
+                // Calculate the maximum possible distance dynamically
+                // We use the fact that in normalized coordinates, the center is at (0,0,0)
+                // and the furthest point would be at a corner of the unit cube
+                float normalizedDist = centerDist / length(float3(0.5, 0.5, 0.5));
+                
+                // Invert so it's 1 at center, 0 at edges
+                float centerFactor = 1.0 - normalizedDist;
+                
+                // Apply smoothstep to control the falloff and create a more natural thickness gradient
+                // Use the CloudFatness property to control the amount of thickness
+                float fatFactor = smoothstep(0.0, 0.7, centerFactor) * _CloudFatness;
+                
+                // Apply the thickness by reducing the distance value
+                // This effectively expands the cloud shape
+                return -(distance - fatFactor) * _SDFStrength;
             }
             
             // Calculate the final cloud shape with noise
