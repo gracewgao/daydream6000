@@ -3,6 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
+public class TrackedVFXObjectData
+{
+    public Vector3 Position;            // raw position
+    public Vector3 SmoothedPosition;    // smoothed position
+    
+    public TrackedVFXObjectData(Vector3 position)
+    {
+        Position = position;
+        SmoothedPosition = position;
+    }
+}
+
 public class AugmentaVFXManager : MonoBehaviour
 {
     public AugmentaManager augmentaManager; // Reference to the Augmenta Manager
@@ -11,11 +23,12 @@ public class AugmentaVFXManager : MonoBehaviour
 
     private Dictionary<int, GameObject> vfxInstances = new Dictionary<int, GameObject>();
     private Dictionary<int, VisualEffect> vfxComponents = new Dictionary<int, VisualEffect>();
-    private Dictionary<int, Vector3> previousPositions = new Dictionary<int, Vector3>();
+    private Dictionary<int, TrackedVFXObjectData> trackedObjects = new Dictionary<int, TrackedVFXObjectData>();
 
     private float HEIGHT = 450f;
     private float LENGTH_SCALE = 24.6f / 8.84f;
     private float WIDTH_SCALE = 19.8f / 8.43f;
+    private float SMOOTH_FACTOR = 0.2f; // 0 = no movement, 1 = no smoothing
 
     private void OnEnable()
     {
@@ -29,9 +42,33 @@ public class AugmentaVFXManager : MonoBehaviour
         augmentaManager.augmentaObjectLeave -= OnAugmentaObjectLeave;
     }
 
-    public static bool ApproximatelyEqual(Vector3 a, Vector3 b, float tolerance = 0.05f)
+    public static bool ApproximatelyEqual(Vector3 a, Vector3 b, float tolerance = 0.25f)
     {
         return Vector3.Distance(a, b) <= tolerance;
+    }
+
+    void Update()
+    {
+        foreach (var pair in trackedObjects)
+        {
+            int id = pair.Key;
+            TrackedVFXObjectData data = pair.Value;
+            
+            if (!vfxInstances.ContainsKey(id) || !vfxComponents.ContainsKey(id))
+                continue;
+                
+            VisualEffect vfx = vfxComponents[id];
+
+            // Apply smoothing
+            data.SmoothedPosition += (data.Position - data.SmoothedPosition) * SMOOTH_FACTOR;
+            
+            // Check if stationary
+            bool isMoving = !ApproximatelyEqual(data.Position, data.SmoothedPosition);
+            vfx.SetBool("EnableSpawning", isMoving);
+            
+            // Set spawn position for new particles
+            vfx.SetVector3("SpawnPosition", data.SmoothedPosition);
+        }
     }
 
     // Called when an object is updated or enters the scene
@@ -46,9 +83,9 @@ public class AugmentaVFXManager : MonoBehaviour
             augmentaObject.worldPosition3D.z * WIDTH_SCALE
         );
 
+        // Create new VFX instance if it doesn't exist
         if (!vfxInstances.ContainsKey(augmentaObject.oid))
         {
-            // Create new VFX instance
             GameObject newVfxInstance = Instantiate(vfxPrefab, vfxManager.transform);
             VisualEffect vfxComponent = newVfxInstance.GetComponent<VisualEffect>();
             
@@ -60,22 +97,17 @@ public class AugmentaVFXManager : MonoBehaviour
             
             vfxInstances.Add(augmentaObject.oid, newVfxInstance);
             vfxComponents.Add(augmentaObject.oid, vfxComponent);
-            previousPositions.Add(augmentaObject.oid, currentPosition);
+            trackedObjects.Add(augmentaObject.oid, new TrackedVFXObjectData(currentPosition));
+            
+            // Initialize VFX
+            vfxComponent.SetBool("EnableSpawning", true);
+            vfxComponent.SetVector3("SpawnPosition", currentPosition);
         }
-        
-        GameObject vfxInstance = vfxInstances[augmentaObject.oid];
-        VisualEffect vfx = vfxComponents[augmentaObject.oid];
-
-        // check if particles should spawn
-        Vector3 previousPosition = previousPositions[augmentaObject.oid];
-        bool isMoving = !ApproximatelyEqual(currentPosition, previousPosition);
-        Debug.LogError("curr position: " + currentPosition + " prev position: " + previousPosition + " isMoving: " + isMoving);
-        vfx.SetBool("EnableSpawning", isMoving);
-        
-        // set spawn position for new particles
-        vfx.SetVector3("SpawnPosition", currentPosition);
-
-        previousPositions[augmentaObject.oid] = currentPosition;
+        else
+        {
+            // Just update the raw position, smoothing is handled in Update()
+            trackedObjects[augmentaObject.oid].Position = currentPosition;
+        }
     }
 
     // Called when an object leaves the scene
@@ -91,7 +123,7 @@ public class AugmentaVFXManager : MonoBehaviour
             Destroy(vfxInstance);
             vfxInstances.Remove(augmentaObject.oid);
             vfxComponents.Remove(augmentaObject.oid);
-            previousPositions.Remove(augmentaObject.oid);
+            trackedObjects.Remove(augmentaObject.oid);
         }
     }
 }
