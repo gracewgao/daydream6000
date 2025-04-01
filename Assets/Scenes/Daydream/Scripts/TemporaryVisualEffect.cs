@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class TemporaryVisualEffect : MonoBehaviour
 {
-    private float lifetime = 30f;
+    private float lifetime = 15f;
     private float scaleDuration = 3f;
     private float timer = 0f;
     private Vector3 targetScale;

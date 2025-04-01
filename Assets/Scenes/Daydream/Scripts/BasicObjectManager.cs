@@ -115,7 +115,7 @@ public class BasicObjectManager : MonoBehaviour
             {
                 data.StationaryTime += Time.deltaTime;
 
-                if (data.StationaryTime >= 1f && !data.MaterialSet)
+                if (data.StationaryTime >= 3f && !data.MaterialSet)
                 {
                     SpawnStationaryMesh(data.SmoothedPosition);
                     data.MaterialSet = true;
