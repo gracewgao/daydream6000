@@ -79,6 +79,10 @@ public class Cloud : MonoBehaviour
     {
         Debug.Log($"current position: {transform.position}");
         Debug.Log($"current state: {currentState}");
+        if (transform.position.y >= 510f) {
+            movementSpeed = 0.0f;
+        }
+
         switch (currentState)
         {
             case CloudPathState.Rising:
@@ -100,7 +104,7 @@ public class Cloud : MonoBehaviour
     {
         // Debug.Log($"Reached DoRising with increase: {randomDirection.normalized * movementSpeed * Time.deltaTime}");
         // Move upward from y=445 to y=455 at the random direction
-        transform.position += randomDirection.normalized * movementSpeed * Time.deltaTime * 10; // TODO: remove 10
+        transform.position += randomDirection.normalized * movementSpeed * Time.deltaTime; // TODO: remove 10
         
         // Once we exceed y=455, switch to the path motion
         if (transform.position.y >= 400f)
