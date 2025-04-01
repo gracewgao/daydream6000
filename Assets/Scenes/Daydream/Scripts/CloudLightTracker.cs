@@ -1,10 +1,14 @@
 using UnityEngine;
+using UnityEngine.VFX; // Add this for VisualEffect
 
 [ExecuteInEditMode]
 public class CloudLightTracker : MonoBehaviour
 {
     private Renderer objectRenderer;
     public Light directionalLight;
+    
+    // Add reference to your VFX Graph
+    public VisualEffect vfxGraph;
     
     private Vector3 lastLightDirection;
     private Transform lastParent;
@@ -34,19 +38,30 @@ public class CloudLightTracker : MonoBehaviour
         }
     }
     
-    void UpdateLightDirection()
+    public void UpdateLightDirection()
     {
-        if (directionalLight != null && objectRenderer != null && objectRenderer.sharedMaterial != null)
+        if (directionalLight != null)
         {
-            // convert light direction to object space
-            Vector3 lightDir = transform.InverseTransformDirection(-directionalLight.transform.forward);
+            if (objectRenderer != null && objectRenderer.sharedMaterial != null)
+            {
+                // convert light direction to object space for shader
+                Vector3 lightDir = transform.InverseTransformDirection(-directionalLight.transform.forward);
+                
+                // update shader light direction
+                objectRenderer.sharedMaterial.SetVector("_SunDirection", lightDir);
+                
+                // Pass the light color to the shader (without intensity)
+                Color lightColor = directionalLight.color;
+                objectRenderer.sharedMaterial.SetColor("_LightColor", lightColor);
+            }
             
-            // update shader light direction
-            objectRenderer.sharedMaterial.SetVector("_SunDirection", lightDir);
-            
-            // Pass the light color to the shader (without intensity)
-            Color lightColor = directionalLight.color;
-            objectRenderer.sharedMaterial.SetColor("_LightColor", lightColor);
+            // Update VFX Graph if available
+            if (vfxGraph != null)
+            {
+                // For VFX Graph, we typically use world space direction
+                Vector3 vfxLightDir = -directionalLight.transform.forward;
+                vfxGraph.SetVector3("SunDirection", vfxLightDir);
+            }
             
             // Cache values
             lastLightDirection = directionalLight.transform.forward;
@@ -55,4 +70,3 @@ public class CloudLightTracker : MonoBehaviour
         }
     }
 }
-

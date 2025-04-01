@@ -254,7 +254,7 @@ Shader "Custom/CloudShader"
                 // Apply red sunset color at very low angles
                 adjustedLightColor = lerp(adjustedLightColor, adjustedLightColor * redSunsetColor, redSunsetFactor);
                 res.rgb *= adjustedLightColor;
-                
+
                 // Create a softer edge falloff & apply to alpha 
                 res.a *= smoothstep(0.0, 0.15, res.a);
                 

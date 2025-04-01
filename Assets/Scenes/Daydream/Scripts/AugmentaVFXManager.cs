@@ -20,10 +20,12 @@ public class AugmentaVFXManager : MonoBehaviour
     public AugmentaManager augmentaManager; // Reference to the Augmenta Manager
     public GameObject vfxPrefab;            // Prefab containing the VFX Graph
     public GameObject vfxManager;           // Parent object for the VFX instances
+    public Light directionalLight;          // Reference to main directional light for sunset effect
 
     private Dictionary<int, GameObject> vfxInstances = new Dictionary<int, GameObject>();
     private Dictionary<int, VisualEffect> vfxComponents = new Dictionary<int, VisualEffect>();
     private Dictionary<int, TrackedVFXObjectData> trackedObjects = new Dictionary<int, TrackedVFXObjectData>();
+    private Dictionary<int, CloudLightTracker> cloudTrackers = new Dictionary<int, CloudLightTracker>();
 
     private float HEIGHT = 450f;
     private float LENGTH_SCALE = 24.6f / 8.84f;
@@ -34,6 +36,16 @@ public class AugmentaVFXManager : MonoBehaviour
     {
         augmentaManager.augmentaObjectUpdate += OnAugmentaObjectUpdate;
         augmentaManager.augmentaObjectLeave += OnAugmentaObjectLeave;
+        
+        // Find directional light if not set
+        if (directionalLight == null)
+        {
+            directionalLight = FindFirstObjectByType<Light>(FindObjectsInactive.Exclude);
+            if (directionalLight == null || directionalLight.type != LightType.Directional)
+            {
+                Debug.LogWarning("No directional light found for cloud lighting effects");
+            }
+        }
     }
 
     private void OnDisable()
@@ -95,6 +107,11 @@ public class AugmentaVFXManager : MonoBehaviour
                 return;
             }
             
+            // Add CloudLightTracker component
+            CloudLightTracker cloudTracker = newVfxInstance.AddComponent<CloudLightTracker>();
+            cloudTracker.directionalLight = directionalLight;
+            cloudTracker.vfxGraph = vfxComponent;
+            
             vfxInstances.Add(augmentaObject.oid, newVfxInstance);
             vfxComponents.Add(augmentaObject.oid, vfxComponent);
             trackedObjects.Add(augmentaObject.oid, new TrackedVFXObjectData(currentPosition));
@@ -108,6 +125,8 @@ public class AugmentaVFXManager : MonoBehaviour
             // Just update the raw position, smoothing is handled in Update()
             trackedObjects[augmentaObject.oid].Position = currentPosition;
         }
+
+        cloudTrackers[augmentaObject.oid].UpdateLightDirection();
     }
 
     // Called when an object leaves the scene
@@ -124,6 +143,19 @@ public class AugmentaVFXManager : MonoBehaviour
             vfxInstances.Remove(augmentaObject.oid);
             vfxComponents.Remove(augmentaObject.oid);
             trackedObjects.Remove(augmentaObject.oid);
+            cloudTrackers.Remove(augmentaObject.oid);
+        }
+    }
+    
+    // Optional: Update all trackers if light changes
+    public void UpdateAllLightTrackers()
+    {
+        foreach (var tracker in cloudTrackers.Values)
+        {
+            if (tracker != null)
+            {
+                tracker.UpdateLightDirection();
+            }
         }
     }
 }
