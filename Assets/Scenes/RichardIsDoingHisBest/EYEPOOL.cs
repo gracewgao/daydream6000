@@ -45,7 +45,7 @@ public class EyepoolCubeGenerator : MonoBehaviour
         CreateWall(new Vector3(-wallLength / 2, 450 + wallHeight / 2, 0), Quaternion.Euler(90, 0, -90), displayPort: 1, "Left");
 
         // Set up the cameras
-        SetupCameras();
+        // SetupCameras();
 
         // Refresh cameras to ensure they are set up correctly
         // StartCoroutine(RefreshCameras());
