@@ -69,7 +69,7 @@ public class Cloud : MonoBehaviour
         randomDirection = new Vector3(randXZ.x, 1f, randXZ.y);
 
         // randomly decide if we do sine wave or spin
-        useSineWave = (Random.value > 0.5f);
+        useSineWave = true; // (Random.value > 0.5f);
     }
 
     /// <summary>
