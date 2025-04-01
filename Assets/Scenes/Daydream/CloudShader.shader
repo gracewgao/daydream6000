@@ -179,17 +179,40 @@ Shader "Custom/CloudShader"
             // Calculate cloud color at a specific point in the cloud
             float4 calculateCloudColor(float3 p, float density, float3 sunDirection)
             {
-                // Improved diffuse calculation with deeper light penetration
-                float lightSampleDistance = 0.6; // Increased from 0.3 for deeper penetration
-                float diffuse = clamp((scene(p) - scene(p + lightSampleDistance * sunDirection)) / lightSampleDistance, 0.0, 1.0);
+                // Multi-sample shadow calculation for softer shadows
+                // Take multiple samples along the light direction and average them
+                float lightSampleDistance = 0.6; // Base distance for light sampling
+                float diffuse = 0.0;
+                
+                // Number of samples for soft shadows
+                const int shadowSamples = 4;
+                
+                // Take multiple samples with gradually increasing distances
+                for (int i = 0; i < shadowSamples; i++) {
+                    // Use progressively larger steps for each sample
+                    float stepSize = lightSampleDistance * (0.5 + float(i) / float(shadowSamples));
+                    float samplePoint = (scene(p) - scene(p + stepSize * sunDirection)) / stepSize;
+                    
+                    // Weight closer samples more heavily for a more natural falloff
+                    float weight = 1.0 - (float(i) / float(shadowSamples)) * 0.5;
+                    diffuse += clamp(samplePoint, 0.0, 1.0) * weight;
+                }
+                
+                // Normalize the weighted sum
+                diffuse /= shadowSamples * 0.75; // Adjust divisor to maintain overall brightness
                 diffuse *= _ShadowStrength; // Apply shadow strength
                 
-                // Reduced ambient term to make clouds darker when not in sunlight
-                float ambient = 0.15; // Reduced from 0.3 for more contrast
+                // Increased ambient term for softer shadows
+                float ambient = 0.25; // Increased from 0.15 for softer shadows
                 float lightFactor = ambient + diffuse * (1.0 - ambient);
                 
-                // Use light factor for lighting
-                float3 lin = lightFactor * _LightColor.rgb; // Use actual light color instead of white
+                // Add bluish-purple tinge to shadows
+                float3 shadowColor = float3(0.46, 0.43, 0.61); // Bluish-purple color
+                float3 sunlitColor = _LightColor.rgb;
+                
+                // Blend between shadow color and sunlit color based on light factor
+                // More shadow = more bluish-purple
+                float3 lin = lerp(shadowColor, sunlitColor, lightFactor);
                 
                 // Density visualization with light-dependent base color
                 float visualDensity = 1.0 - pow(1.0 - min(density, 1.0), 0.5); // Compress the density curve
