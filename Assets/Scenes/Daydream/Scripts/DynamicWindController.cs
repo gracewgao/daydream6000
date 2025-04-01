@@ -61,7 +61,7 @@ public class DynamicWindController : MonoBehaviour
         volumetricClouds.globalWindSpeed.overrideState = true;
         WindParameter.WindParamaterValue windValue = new WindParameter.WindParamaterValue
         {
-            customValue = windSpeed,
+            customValue = windSpeed + 30,
             mode = WindParameter.WindOverrideMode.Custom
         };
         volumetricClouds.globalWindSpeed.value = windValue;
