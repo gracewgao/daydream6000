@@ -178,20 +178,23 @@ Shader "Custom/CloudShader"
                     
                     if (density > 0.0)
                     {
-                        // Original diffuse calculation
-                        float diffuse = clamp((scene(p) - scene(p + 0.3 * sunDirection)) / 0.3, 0.0, 1.0);
+                        // Improved diffuse calculation with deeper light penetration
+                        float lightSampleDistance = 0.6; // Increased from 0.3 for deeper penetration
+                        float diffuse = clamp((scene(p) - scene(p + lightSampleDistance * sunDirection)) / lightSampleDistance, 0.0, 1.0);
                         diffuse *= _ShadowStrength; // Apply shadow strength
                         
-                        // Add ambient term to prevent shadows from being too dark
-                        float ambient = 0.3; // Minimum light level
+                        // Reduced ambient term to make clouds darker when not in sunlight
+                        float ambient = 0.15; // Reduced from 0.3 for more contrast
                         float lightFactor = ambient + diffuse * (1.0 - ambient);
                         
                         // Use light factor for lighting
-                        float3 lin = lightFactor * float3(1.0, 1.0, 1.0);
+                        float3 lin = lightFactor * _LightColor.rgb; // Use actual light color instead of white
                         
-                        // Original density visualization
+                        // Density visualization with light-dependent base color
                         float visualDensity = 1.0 - pow(1.0 - min(density, 1.0), 0.5); // Compress the density curve
-                        float4 color = float4(lerp(float3(1.0, 1.0, 1.0), float3(0.5, 0.5, 0.5), visualDensity), density);
+                        // Base cloud color now depends on light intensity
+                        float3 baseCloudColor = lerp(float3(0.8, 0.8, 0.8), float3(0.4, 0.4, 0.4), visualDensity);
+                        float4 color = float4(baseCloudColor, density);
                         
                         // Apply lighting
                         color.rgb *= lin;
@@ -241,7 +244,7 @@ Shader "Custom/CloudShader"
                 
                 // Low-angle sunset (red tones) - active when sun is very low on horizon
                 // Increased range to show more red effect
-                float redSunsetFactor = 1.0 - smoothstep(0.0, 0.3, sunHeight);
+                float redSunsetFactor = 1.0 - smoothstep(0.0, 0.25, sunHeight);
                 
                 // Create sunset colors
                 float3 orangeSunsetColor = float3(1.2, 0.9, 0.5); // Less saturated warm orange
@@ -259,6 +262,11 @@ Shader "Custom/CloudShader"
                 adjustedLightColor = lerp(adjustedLightColor, adjustedLightColor * orangeSunsetColor, orangeSunsetFactor);
                 // Apply red sunset color at very low angles
                 adjustedLightColor = lerp(adjustedLightColor, adjustedLightColor * redSunsetColor, redSunsetFactor);
+                
+                // Apply additional darkening when sun becomes lower in the sky
+                float sunVisibility = smoothstep(-0.1, 0.05, sunHeight);
+                adjustedLightColor *= max(0.2, sunVisibility);
+                
                 res.rgb *= adjustedLightColor;
                 
                 // Create a softer edge falloff & apply to alpha 
