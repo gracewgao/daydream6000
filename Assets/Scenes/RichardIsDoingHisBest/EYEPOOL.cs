@@ -45,7 +45,7 @@ public class EyepoolCubeGenerator : MonoBehaviour
         CreateWall(new Vector3(-wallLength / 2, 450 + wallHeight / 2, 0), Quaternion.Euler(90, 0, -90), displayPort: 1, "Left");
 
         // Set up the cameras
-        // SetupCameras();
+        SetupCameras();
 
         // Refresh cameras to ensure they are set up correctly
         // StartCoroutine(RefreshCameras());
@@ -88,17 +88,17 @@ public class EyepoolCubeGenerator : MonoBehaviour
     void SetupCameras()
     {
         // Walls
-        Vector3 rightWallLeftQuadrant = new Vector3(-7.47f, 455.4f, -7.2f);
-        Vector3 rightWallRightQuadrant = new Vector3(-7.47f, 455.4f, 7.2f);
+        // Vector3 rightWallLeftQuadrant = new Vector3(-7.47f, 455.4f, -7.2f);
+        // Vector3 rightWallRightQuadrant = new Vector3(-7.47f, 455.4f, 7.2f);
 
-        Vector3 leftWallLeftQuadrant = new Vector3(7.47f, 455.4f, 7.2f);
-        Vector3 leftWallRightQuadrant = new Vector3(7.47f, 455.4f, -7.2f);
+        // Vector3 leftWallLeftQuadrant = new Vector3(7.47f, 455.4f, 7.2f);
+        // Vector3 leftWallRightQuadrant = new Vector3(7.47f, 455.4f, -7.2f);
 
-        Vector3 frontWallLeftQuadrant = new Vector3(7.2f, 455.4f, -7.47f);
-        Vector3 frontWallRightQuadrant = new Vector3(-7.2f, 455.4f, -7.47f);
+        // Vector3 frontWallLeftQuadrant = new Vector3(7.2f, 455.4f, -7.47f);
+        // Vector3 frontWallRightQuadrant = new Vector3(-7.2f, 455.4f, -7.47f);
 
-        Vector3 backWallLeftQuadrant = new Vector3(-7.2f, 455.4f, 7.47f);
-        Vector3 backWallRightQuadrant = new Vector3(7.2f, 455.4f, 7.47f);
+        // Vector3 backWallLeftQuadrant = new Vector3(-7.2f, 455.4f, 7.47f);
+        // Vector3 backWallRightQuadrant = new Vector3(7.2f, 455.4f, 7.47f);
 
         // Floor
         Vector3 floorTopRightQuadrant1 = new Vector3(-5.85f, 456.2f, 6.25f);
@@ -113,15 +113,15 @@ public class EyepoolCubeGenerator : MonoBehaviour
         string left = "_left";
         string right = "_right";
 
-        CreateCamera(frontWallLeftQuadrant, right, Quaternion.Euler(0, 180, 0), "FrontCamera", displayPortFrontBack);
-        CreateCamera(backWallLeftQuadrant, right, Quaternion.Euler(0, 0, 0), "BackCamera", displayPortLeftRight);
-        CreateCamera(rightWallLeftQuadrant, right, Quaternion.Euler(0, -90, 0), "RightCamera", displayPortFrontBack);
-        CreateCamera(leftWallLeftQuadrant, right, Quaternion.Euler(0, 90, 0), "LeftCamera", displayPortLeftRight);
+        // CreateCamera(frontWallLeftQuadrant, right, Quaternion.Euler(0, 180, 0), "FrontCamera", displayPortFrontBack);
+        // CreateCamera(backWallLeftQuadrant, right, Quaternion.Euler(0, 0, 0), "BackCamera", displayPortLeftRight);
+        // CreateCamera(rightWallLeftQuadrant, right, Quaternion.Euler(0, -90, 0), "RightCamera", displayPortFrontBack);
+        // CreateCamera(leftWallLeftQuadrant, right, Quaternion.Euler(0, 90, 0), "LeftCamera", displayPortLeftRight);
 
-        CreateCamera(frontWallRightQuadrant, left, Quaternion.Euler(0, 180, 0), "FrontCamera", displayPortFrontBack);
-        CreateCamera(backWallRightQuadrant, left, Quaternion.Euler(0, 0, 0), "BackCamera", displayPortLeftRight);
-        CreateCamera(rightWallRightQuadrant, left, Quaternion.Euler(0, -90, 0), "RightCamera", displayPortFrontBack);
-        CreateCamera(leftWallRightQuadrant, left, Quaternion.Euler(0, 90, 0), "LeftCamera", displayPortLeftRight);
+        // CreateCamera(frontWallRightQuadrant, left, Quaternion.Euler(0, 180, 0), "FrontCamera", displayPortFrontBack);
+        // CreateCamera(backWallRightQuadrant, left, Quaternion.Euler(0, 0, 0), "BackCamera", displayPortLeftRight);
+        // CreateCamera(rightWallRightQuadrant, left, Quaternion.Euler(0, -90, 0), "RightCamera", displayPortFrontBack);
+        // CreateCamera(leftWallRightQuadrant, left, Quaternion.Euler(0, 90, 0), "LeftCamera", displayPortLeftRight);
 
         CreateCamera(floorTopRightQuadrant1, right, Quaternion.Euler(90, 0, 0), "FloorCameraUp", displayPortFloor1);
         CreateCamera(floorBottomRightQuadrant, right, Quaternion.Euler(90, 0, 0), "FloorCameraMid", displayPortFloor1);
