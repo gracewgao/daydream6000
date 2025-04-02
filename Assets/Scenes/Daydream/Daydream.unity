@@ -3060,7 +3060,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f4476cc13cd54b0bae2724ce6ee3452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dayDuration: 30
+  dayDuration: 300
   sunPathCurve:
     serializedVersion: 2
     m_Curve:
