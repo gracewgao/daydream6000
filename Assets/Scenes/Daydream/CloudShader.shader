@@ -15,6 +15,7 @@ Shader "Custom/CloudShader"
         _NoiseRange ("Noise Range", Range(0.5, 5.0)) = 1.0
         _CloudFatness ("Cloud Fatness", Range(0, 0.5)) = 0.1    // controls how fat the clouds are
         _AnimationSpeed ("Animation Speed", Range(0, 10)) = 0.5   // controls speed of cloud animation
+        _BoundingBoxSize ("Bounding Box Size", Float) = 1.0     // controls the side length of the bounding box
         _SunDirection ("Sun Direction", Vector) = (1,0,0)       // controls direction of sun (as a unit vector in absolute world coordinates)
         _LightColor ("Light Color", Color) = (1,1,1,1)          // color of the directional light
         _ShadowStrength ("Shadow Strength", Range(0.1, 3.0)) = 1.0 // controls how dark the shadows get
@@ -72,6 +73,8 @@ Shader "Custom/CloudShader"
 
             float _AnimationSpeed;
             bool _DebugSDF;
+            
+            float _BoundingBoxSize;
 
             float3 _SunDirection;
             float3 _GlobalSunDirection;
@@ -143,8 +146,9 @@ Shader "Custom/CloudShader"
                 
                 // Calculate the maximum possible distance dynamically
                 // We use the fact that in normalized coordinates, the center is at (0,0,0)
-                // and the furthest point would be at a corner of the unit cube
-                float normalizedDist = centerDist / length(float3(0.5, 0.5, 0.5));
+                // and the furthest point would be at a corner of the bounding box
+                // The bounding box size is controlled by _BoundingBoxSize (default=1.0)
+                float normalizedDist = centerDist / (length(float3(0.5, 0.5, 0.5)) * _BoundingBoxSize);
                 
                 // Invert so it's 1 at center, 0 at edges
                 float centerFactor = 1.0 - normalizedDist;
