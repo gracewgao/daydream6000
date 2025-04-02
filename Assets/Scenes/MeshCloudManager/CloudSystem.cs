@@ -52,6 +52,8 @@ public class CloudSystem : MonoBehaviour
         SpawnCloud();
     }
 
+    
+
     void Update()
     {
         // move each cloud
@@ -68,14 +70,14 @@ public class CloudSystem : MonoBehaviour
                 // WrapAroundBoundingBox(cloud);
                 if (insideInner(position) || outsideOuter(position))
                 {
-                    Debug.Log("deleting clouds and replacing");
+                    // Debug.Log("deleting clouds and replacing");
                     Destroy(cloud.gameObject);
                     cloudCollection.RemoveAt(i);
 
                     // once destroyed, spawn a new cloud to replace it
                     float delaySeconds = Random.Range(0f, 10f);
                     StartCoroutine(DelayedSpawnCloud(delaySeconds));
-                    Debug.Log("replaced clouds");
+                    // Debug.Log("replaced clouds");
                 }
             }
         }
@@ -120,7 +122,7 @@ public class CloudSystem : MonoBehaviour
             float z = Random.Range(outerCenter.z - halfOuter.z, outerCenter.z + halfOuter.z);
             Vector3 candidate = new Vector3(x, startingY, z);
 
-            if (!insideInner(candidate))
+            if (!insideInner(candidate) && !insideCorner(candidate, 2.0f))
             {
                 return candidate; // valid spawn point
             }
@@ -131,13 +133,13 @@ public class CloudSystem : MonoBehaviour
     /// If random point falls inside the inner box, keep trying until it’s outside.
 
     private bool insideInner(Vector3 position) {
-        Debug.Log("inside Inner");
+        // Debug.Log("inside Inner");
         Vector3 innerSize = eyepoolCube.GetEyepoolCubeSize();
         Vector3 halfInner = innerSize / 2f;
         // Debug.Log($"Inner Center: {innerCenter}");
         Vector3 minInner = innerCenter - halfInner;
         Vector3 maxInner = innerCenter + halfInner;
-        Debug.Log($"Inner Min:{minInner}, Max:{maxInner}");
+        // Debug.Log($"Inner Min:{minInner}, Max:{maxInner}");
         // Check if candidate is inside the inner bounding box
         bool insideInner =
             position.x >= (innerCenter.x - halfInner.x) &&
@@ -148,11 +150,11 @@ public class CloudSystem : MonoBehaviour
     }
 
     private bool outsideOuter(Vector3 position) {
-        Debug.Log("outside Outer");
+        // Debug.Log("outside Outer");
         Vector3 minBounds = outerCenter - outerSize / 2f;
         Vector3 maxBounds = outerCenter + outerSize / 2f;
-        // Debug.Log($"Outer Center: {outerCenter}");
-        Debug.Log($"Outer Min:{minBounds}, Max:{maxBounds}");
+        // // Debug.Log($"Outer Center: {outerCenter}");
+        // Debug.Log($"Outer Min:{minBounds}, Max:{maxBounds}");
 
         bool outsideOuter = 
             position.x < minBounds.x || position.x > maxBounds.x ||
@@ -160,6 +162,38 @@ public class CloudSystem : MonoBehaviour
             position.z < minBounds.z || position.z > maxBounds.z;
         return outsideOuter;
     }
+
+    private bool insideCorner(Vector3 position, float margin)
+    {
+        Vector3 halfOuter = outerSize / 2f;
+        Vector3 outerMin = outerCenter - halfOuter;
+        Vector3 outerMax = outerCenter + halfOuter;
+
+        Vector3 innerSize = eyepoolCube.GetEyepoolCubeSize();
+        Vector3 halfInner = innerSize / 2f;
+
+        float cornerWidth = outerMax.x - halfInner.x;
+        float cornerDepth = outerMax.z - halfInner.z;
+
+        bool inLeft = position.x < outerMin.x + (outerSize.x - innerSize.x) / 2f + margin;
+        bool inRight = position.x > outerMax.x - (outerSize.x - innerSize.x) / 2f - margin;
+        bool inTop = position.z > outerMax.z - (outerSize.z - innerSize.z) / 2f - margin;
+        bool inBottom = position.z < outerMin.z + (outerSize.z - innerSize.z) / 2f + margin;
+
+        Debug.Log($"left side bounds: {outerMin.x}, {outerSize.x}, {innerSize.x}, {(outerSize.x - innerSize.x) / 2f}, {outerMin.x + (outerSize.x - innerSize.x) / 2f}");
+        Debug.Log($"right side bounds: {outerMax.x}, {outerSize.x}, {innerSize.x}, {(outerSize.x - innerSize.x) / 2f}, {outerMax.x - (outerSize.x - innerSize.x) / 2f}"); 
+        Debug.Log($"top side bounds: {outerMax.z}, {outerSize.z}, {innerSize.z}, {(outerSize.z - innerSize.z) / 2f}, {outerMax.z - (outerSize.z - innerSize.z) / 2f}");
+        Debug.Log($"bottom side bounds: {outerMin.z}, {outerSize.z}, {innerSize.z}, {(outerSize.z - innerSize.z) / 2f}, {outerMin.z + (outerSize.z - innerSize.z) / 2f}");
+
+        bool isCorner =
+            (inLeft && inTop) ||  // Top-left
+            (inRight && inTop) || // Top-right
+            (inLeft && inBottom) || // Bottom-left
+            (inRight && inBottom); // Bottom-right
+
+        return isCorner;
+    }
+
 
     /// If a cloud moves out of the outer bounding box, wrap it around to the other side.
     // The cloud dies under any of the following conditions: 
