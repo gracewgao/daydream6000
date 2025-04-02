@@ -155,6 +155,7 @@ Material:
     - _Anisotropy: 0
     - _BlendMode: 0
     - _CloudDensity: 1
+    - _CloudFatness: 0.1
     - _CloudSpeed: 0.5
     - _CoatMask: 0
     - _CullMode: 2
@@ -275,7 +276,7 @@ Material:
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
     - _LightColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
-    - _SunDirection: {r: -0.02060312, g: -0.5498813, b: -0.83498865, a: 0}
+    - _SunDirection: {r: 0, g: 0.15658022, b: 0.9876654, a: 0}
     - _ThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
     - _TransmittanceColor: {r: 1, g: 1, b: 1, a: 1}
     - _UVDetailsMappingMask: {r: 1, g: 0, b: 0, a: 0}
