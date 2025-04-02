@@ -3060,7 +3060,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f4476cc13cd54b0bae2724ce6ee3452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dayDuration: 300
+  dayDuration: 30
   sunPathCurve:
     serializedVersion: 2
     m_Curve:
@@ -3705,6 +3705,37 @@ MonoBehaviour:
   augmentaManager: {fileID: 2007777191}
   particlePrefab: {fileID: 9061664119830247179, guid: cd63a8d12330644d6a08ba31da3b76d7, type: 3}
   particleManager: {fileID: 1455107528}
+  sun: {fileID: 1201540001}
+  sunColorGradient:
+    serializedVersion: 2
+    key0: {r: 0.6981132, g: 0.36619776, b: 0.1745283, a: 0.5882353}
+    key1: {r: 0.8490566, g: 0.6015321, b: 0.41251338, a: 1}
+    key2: {r: 0.8301887, g: 0.7200151, b: 0.57564974, a: 1}
+    key3: {r: 0.7264151, g: 0.7264151, b: 0.70928264, a: 1}
+    key4: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 0}
+    key5: {r: 0.9150943, g: 0.9150943, b: 0.9150943, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 2621
+    ctime2: 6554
+    ctime3: 32768
+    ctime4: 52428
+    ctime5: 65535
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 386
+    atime2: 6554
+    atime3: 65535
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 4
 --- !u!1 &1503257419
 GameObject:
   m_ObjectHideFlags: 0
@@ -4000,7 +4031,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 7bae5aad213fb48ba8e6f146ac0e5e5f, type: 3}
   m_Resource: {fileID: 8300000, guid: 7bae5aad213fb48ba8e6f146ac0e5e5f, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
