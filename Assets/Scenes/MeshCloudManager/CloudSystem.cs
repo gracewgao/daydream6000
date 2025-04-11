@@ -52,8 +52,6 @@ public class CloudSystem : MonoBehaviour
         SpawnCloud();
     }
 
-    
-
     void Update()
     {
         // move each cloud
