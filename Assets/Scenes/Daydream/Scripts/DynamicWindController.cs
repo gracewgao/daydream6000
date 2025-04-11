@@ -92,7 +92,7 @@ public class DynamicWindController : MonoBehaviour
         // Smooth using EMA
         smoothedWindSpeed = smoothingAlpha * rawWindSpeed + (1f - smoothingAlpha) * smoothedWindSpeed;
 
-        Debug.Log($"AvgSpeed: {avgSpeed:F2}, RawWind: {rawWindSpeed:F2}, SmoothedWind: {smoothedWindSpeed:F2}");
+        // Debug.Log($"AvgSpeed: {avgSpeed:F2}, RawWind: {rawWindSpeed:F2}, SmoothedWind: {smoothedWindSpeed:F2}");
 
         // Set wind speed
         volumetricClouds.globalWindSpeed.overrideState = true;
