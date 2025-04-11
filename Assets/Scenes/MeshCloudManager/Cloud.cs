@@ -12,6 +12,7 @@ public class Cloud : MonoBehaviour
     private bool useSineWave;
 
     private float sineWaveFrequency;
+    public CloudSystem.Wall wallSide;
     private float sineWaveAmplitude;
     private float spinSpeed;
 
