@@ -243,7 +243,10 @@ Shader "Custom/CloudShader"
                 // Density visualization with light-dependent base color
                 float visualDensity = 1.0 - pow(1.0 - min(density, 1.0), 0.5); // Compress the density curve
                 // Base cloud color now depends on light intensity
-                float3 baseCloudColor = lerp(float3(0.8, 0.8, 0.8), float3(0.4, 0.4, 0.4), visualDensity);
+                // Using slightly warmer and darker colors for a more natural look
+                float3 brightCloudColor = float3(0.75, 0.73, 0.7); // Slightly warmer white (was 0.8, 0.8, 0.8)
+                float3 darkCloudColor = float3(0.37, 0.35, 0.33); // Slightly warmer dark gray (was 0.4, 0.4, 0.4)
+                float3 baseCloudColor = lerp(brightCloudColor, darkCloudColor, visualDensity);
                 float4 color = float4(baseCloudColor, density);
                 
                 // Apply lighting
