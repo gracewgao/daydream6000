@@ -25,6 +25,16 @@ public class Cloud : MonoBehaviour
         Exiting
     }
 
+    // clouds 
+
+    private float frustumCheckInterval = 1.0f;      // how often to check frustum
+    private float destructionDelay = -1f;           // if > 0, countdown to self-destruction
+    private Coroutine destructionCoroutine;
+    private Camera mainCamera;
+    private Renderer rend;
+
+    private bool enteredFrustum = false;
+
     /// <summary>
     /// Called by CloudSystem after instantiation.
     /// Now takes 'spawnPos' as argument.
@@ -81,6 +91,10 @@ public class Cloud : MonoBehaviour
     {
         // Debug.Log($"current position: {transform.position}");
         // Debug.Log($"current state: {currentState}");
+        // if (!enteredFrustum && IsInAnyFrustum()) {
+        //     Debug.Log("I have entered frustum");
+        //     enteredFrustum = true;
+        // }
 
         switch (currentState)
         {
@@ -156,5 +170,30 @@ public class Cloud : MonoBehaviour
     public virtual void Describe()
     {
         Debug.Log($"Cloud: Speed={movementSpeed}, Path={currentState}, usingSine={useSineWave}");
+    }
+
+    private bool IsInAnyFrustum()
+    {
+        if (rend == null)
+            rend = GetComponent<Renderer>();
+
+        if (rend == null)
+            return false;
+
+        // Get all cameras named "Cam_Wall*"
+        Camera[] allCams = GameObject.FindObjectsOfType<Camera>();
+        foreach (Camera cam in allCams)
+        {
+            if (cam.name.StartsWith("Cam_Wall"))
+            {
+                Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cam);
+                if (GeometryUtility.TestPlanesAABB(planes, rend.bounds))
+                {
+                    return true; // visible in at least one wall cam
+                }
+            }
+        }
+
+        return false; // not visible in any
     }
 }

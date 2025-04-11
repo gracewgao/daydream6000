@@ -110,17 +110,46 @@ public class CloudSystem : MonoBehaviour
         cloudCollection.Add(newCloud);
     }
 
+    // private Vector3 GetRandomPositionExcludingInner()
+    // {
+    //     Vector3 halfOuter = outerSize / 2f;
+
+    //     while (true)
+    //     {
+    //         // pick a random position within the outer bounding box
+    //         float x = Random.Range(outerCenter.x - halfOuter.x, outerCenter.x + halfOuter.x);
+    //         float y = Random.Range(outerCenter.y - halfOuter.y, outerCenter.y + halfOuter.y);
+    //         float z = Random.Range(outerCenter.z - halfOuter.z, outerCenter.z + halfOuter.z);
+    //         Vector3 candidate = new Vector3(x, startingY, z);
+
+    //         if (!insideInner(candidate) && !insideCorner(candidate, 2.0f))
+    //         {
+    //             return candidate; // valid spawn point
+    //         }
+    //     }
+    // }
+
     private Vector3 GetRandomPositionExcludingInner()
     {
         Vector3 halfOuter = outerSize / 2f;
+        Vector3 innerSize = eyepoolCube.GetEyepoolCubeSize();
+        float shiftMagnitude = Mathf.Max(innerSize.x, innerSize.z) * 0.3f; // tweak this
 
         while (true)
         {
             // pick a random position within the outer bounding box
             float x = Random.Range(outerCenter.x - halfOuter.x, outerCenter.x + halfOuter.x);
-            float y = Random.Range(outerCenter.y - halfOuter.y, outerCenter.y + halfOuter.y);
             float z = Random.Range(outerCenter.z - halfOuter.z, outerCenter.z + halfOuter.z);
             Vector3 candidate = new Vector3(x, startingY, z);
+
+            // Compute direction away from innerCenter in XZ plane
+            Vector3 offsetDir = (candidate - innerCenter);
+            offsetDir.y = 0f; // just XZ direction
+            if (offsetDir != Vector3.zero)
+            {
+                offsetDir.Normalize();
+                candidate += offsetDir * shiftMagnitude;
+            }
 
             if (!insideInner(candidate) && !insideCorner(candidate, 2.0f))
             {
@@ -129,11 +158,13 @@ public class CloudSystem : MonoBehaviour
         }
     }
 
+
     /// Returns a random position in the outer bounding box, excluding any point in the inner bounding box.
     /// If random point falls inside the inner box, keep trying until it’s outside.
 
     private bool insideInner(Vector3 position) {
         // Debug.Log("inside Inner");
+        // float scale = 1.5f;
         Vector3 innerSize = eyepoolCube.GetEyepoolCubeSize();
         Vector3 halfInner = innerSize / 2f;
         // Debug.Log($"Inner Center: {innerCenter}");
