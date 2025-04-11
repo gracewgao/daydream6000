@@ -14,6 +14,7 @@ Shader "Custom/CloudShader"
         _NoiseBias ("Noise Bias", Range(0.5, 3.0)) = 0.7
         _NoiseRange ("Noise Range", Range(0.5, 5.0)) = 1.0
         _CloudFatness ("Cloud Fatness", Range(0, 0.5)) = 0.1    // controls how fat the clouds are
+        _CloudVisibility ("Cloud Visibility", Range(0, 1)) = 1.0      // controls how much the clouds appear (0=invisible, 1=fully visible)
         _AnimationSpeed ("Animation Speed", Range(0, 10)) = 0.5   // controls speed of cloud animation
         _BoundingBoxSize ("Bounding Box Size", Float) = 1.0     // controls the side length of the bounding box
         _SunDirection ("Sun Direction", Vector) = (1,0,0)       // controls direction of sun (as a unit vector in absolute world coordinates)
@@ -70,6 +71,7 @@ Shader "Custom/CloudShader"
             float _NoiseBias;
             float _NoiseRange;
             float _CloudFatness;
+            float _CloudVisibility;
 
             float _AnimationSpeed;
             bool _DebugSDF;
@@ -199,7 +201,28 @@ Shader "Custom/CloudShader"
                 // Apply the boundary falloff to ensure clouds fade out at the edges
                 float boundaryFalloff = calculateBoundaryFalloff(p);
                 
-                return cloudShape * _CloudDensity * boundaryFalloff;
+                // Apply visibility effect based on noise and density
+                // When _CloudVisibility is 0, clouds are invisible
+                // When _CloudVisibility increases, clouds gradually appear with erosion effects
+                float erosionNoise = fbm(p * 1.5 + float3(0.42, 0.37, 0.29)); // Different frequency for variation
+                float visibilityFactor = 0.0; // Start with 0 (invisible) by default
+                
+                // Create a threshold based on visibility parameter
+                // Higher noise values will be eroded first (wispy parts)
+                float visibilityThreshold = lerp(1.5, -0.5, _CloudVisibility);
+                
+                // Create smooth transition at the visibility boundary
+                visibilityFactor = smoothstep(visibilityThreshold - 0.3, visibilityThreshold + 0.3, erosionNoise);
+                
+                // Apply additional density-based visibility (thinner parts appear last)
+                float densityVisibility = smoothstep(0.0, 0.3, cloudShape * _CloudDensity);
+                visibilityFactor = min(visibilityFactor, lerp(0.0, densityVisibility, _CloudVisibility * 0.7));
+                
+                // Apply overall visibility based on _CloudVisibility
+                // This ensures clouds are completely invisible when _CloudVisibility = 0
+                visibilityFactor *= _CloudVisibility;
+                
+                return cloudShape * _CloudDensity * boundaryFalloff * visibilityFactor;
             }
 
             // Calculate cloud color at a specific point in the cloud
