@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Cloud : MonoBehaviour
 {
@@ -6,20 +7,22 @@ public class Cloud : MonoBehaviour
     public float movementSpeed;
 
     private CloudPathState currentState;
-
-    // cloud wall
-    public CloudSystem.Wall wallSide;
-
     private Vector3 initialPosition;
-    private Vector3 randomDirection; // For Rising
+    private Vector3 randomDirection;
     private bool useSineWave;
 
-    // Sine wave parameters
     private float sineWaveFrequency;
     private float sineWaveAmplitude;
-
-    // Rotation speed if spinning
     private float spinSpeed;
+
+    private bool hasEnteredFrustum = false;
+    private Renderer rend;
+
+    private int timer = 1000;
+    private float updateVisibility = 0.00001f;
+
+    private float fadeInDuration = 1.5f;
+    private float visibilityFadeOutDelay = -1f;
 
     private enum CloudPathState
     {
@@ -28,120 +31,91 @@ public class Cloud : MonoBehaviour
         Exiting
     }
 
-    // clouds 
+    void Start()
+    {
+        rend = GetComponent<Renderer>();
+        StartCoroutine(CheckFrustumLoop());
+    }
 
-    private float frustumCheckInterval = 1.0f;      // how often to check frustum
-    private float destructionDelay = -1f;           // if > 0, countdown to self-destruction
-    private Coroutine destructionCoroutine;
-    private Camera mainCamera;
-    private Renderer rend;
-
-    private bool enteredFrustum = false;
-
-    /// <summary>
-    /// Called by CloudSystem after instantiation.
-    /// Now takes 'spawnPos' as argument.
-    /// </summary>
     public void Initialize(Vector3 spawnPos, float scale)
     {
-        // position & record
         transform.position = spawnPos;
         initialPosition = spawnPos;
 
-        // apply a material
         cloudMaterial = CloudMaterials.GetRandomMaterial();
-        if (cloudMaterial != null)
+        rend = GetComponent<Renderer>();
+        if (cloudMaterial != null && rend != null)
         {
-            Renderer rend = GetComponent<Renderer>();
-            if (rend != null) rend.material = cloudMaterial;
+            rend.material = cloudMaterial;
+            rend.material.SetFloat("_BoundingBoxSize", scale);
+            rend.material.SetFloat("_CloudVisibility", 0f); // start invisible
         }
-        // Debug.Log($"scale: {scale}");
-        cloudMaterial.SetFloat("_BoundingBoxSize", scale); // send the scale into the shader 
 
-        // derive movement parameters from the position
-        // e.g., distance from the center point.
-        Vector3 center = new Vector3(0f, 490f, 0f); // center point
+        Vector3 center = new Vector3(0f, 490f, 0f);
         float dist = Vector3.Distance(spawnPos, center);
-
-        // example formula: movementSpeed is 0.05f + some fraction of 'dist'
         float movementFactor = 0.001f;
-        movementSpeed = 0.5f + (dist * movementFactor);  // tweak the movementFactor (0.001f) as you wish
 
-        // sine wave frequency/amplitude also scale with dist
-        sineWaveFrequency = 1.0f + dist * movementFactor * 10;   // e.g. bigger distance => bigger frequency
+        movementSpeed = 0.5f + (dist * movementFactor);
+        sineWaveFrequency = 1.0f + dist * movementFactor * 10;
         sineWaveAmplitude = 0.1f + dist * movementFactor * 5;
+        spinSpeed = 20f;
 
-        // spin speed scaled by distance
-        spinSpeed = 20f; // or random within a range plus dist
-
-        // Debug.Log($"SpawnPos={spawnPos}, dist={dist}, movementSpeed={movementSpeed}, spin={spinSpeed}");
-
-        // all clouds start in the "rising" state
         currentState = CloudPathState.Rising;
 
-        // create a random “rising angle” with an upward Y
         Vector2 randXZ = Random.insideUnitCircle.normalized;
         randomDirection = new Vector3(randXZ.x, 1f, randXZ.y);
-
-        // randomly decide if we do sine wave or spin
-        useSineWave = true; // (Random.value > 0.5f);
+        useSineWave = true;
     }
 
-    /// <summary>
-    /// Custom per-cloud update logic (called by CloudSystem).
-    /// </summary>
     public void UpdateCloud()
     {
-        // Debug.Log($"current position: {transform.position}");
-        // Debug.Log($"current state: {currentState}");
-        // if (!enteredFrustum && IsInAnyFrustum()) {
-        //     Debug.Log("I have entered frustum");
-        //     enteredFrustum = true;
-        // }
+        if (!hasEnteredFrustum && IsInAnyFrustum())
+        {
+            Debug.Log("In frustum");
+            hasEnteredFrustum = true;
+            visibilityFadeOutDelay = Random.Range(10f, 20f); // start countdown
+        }
 
+        // Handle fade in
+        if (hasEnteredFrustum)
+        {
+            float current = cloudMaterial.GetFloat("_CloudVisibility");
+            Debug.Log($"Current: {current}");
+            float next = Mathf.MoveTowards(current, 1f, Time.deltaTime / fadeInDuration);
+            cloudMaterial.SetFloat("_CloudVisibility", next);
+
+            // visibilityFadeOutDelay -= Time.deltaTime;
+            // Debug.Log($"visibilityFadeOutDelay: {visibilityFadeOutDelay}");
+            // if (visibilityFadeOutDelay <= 0f)
+            // {
+            //     StartCoroutine(FadeVisibility(1f, 0f, 2f));
+            //     visibilityFadeOutDelay = float.PositiveInfinity; // avoid restarting
+            // }
+        }
+
+        // Move logic
         switch (currentState)
         {
-            case CloudPathState.Rising:
-                DoRising();
-                break;
-
-            case CloudPathState.PathMotion:
-                if (useSineWave) DoSineWave();
-                else DoSpin();
-                break;
-
-            case CloudPathState.Exiting:
-                DoExiting();
-                break;
+            case CloudPathState.Rising: DoRising(); break;
+            case CloudPathState.PathMotion: if (useSineWave) DoSineWave(); else DoSpin(); break;
+            case CloudPathState.Exiting: DoExiting(); break;
         }
     }
 
     private void DoRising()
     {
-        // Debug.Log($"Reached DoRising with increase: {randomDirection.normalized * movementSpeed * Time.deltaTime}");
-        // Move upward from y=445 to y=455 at the random direction
-        transform.position += randomDirection.normalized * movementSpeed * Time.deltaTime; // TODO: remove 10
-        
-        // Once we exceed y=455, switch to the path motion
+        transform.position += randomDirection.normalized * movementSpeed * Time.deltaTime;
+
         if (transform.position.y >= 400f)
         {
-            // Debug.Log("Switching path motion");
-            // Vector3 pos = transform.position;
-            // pos.y = 400f;
-            // transform.position = pos;
-
             currentState = CloudPathState.PathMotion;
         }
     }
 
     private void DoSineWave()
     {
-        // Debug.Log("Reached DoSineWave");
-
-        // move upward slowly
         transform.position += Vector3.up * movementSpeed * Time.deltaTime;
 
-        // add a sine offset for a particular coordinate
         Vector3 pos = transform.position;
         pos.y += Mathf.Sin(Time.time * sineWaveFrequency) * sineWaveAmplitude * Time.deltaTime;
         transform.position = pos;
@@ -149,41 +123,70 @@ public class Cloud : MonoBehaviour
 
     private void DoSpin()
     {
-        // spin around local y axis while also moving upward
         transform.Rotate(Vector3.up, spinSpeed * Time.deltaTime);
         transform.position += Vector3.up * movementSpeed * Time.deltaTime;
     }
 
     private void DoExiting()
     {
-        // for now, let them drift “off screen,” just move them up
-        transform.position += Vector3.up * (movementSpeed * 2f) * Time.deltaTime;  
+        transform.position += Vector3.up * (movementSpeed * 2f) * Time.deltaTime;
     }
 
-    /// <summary>
-    /// Called by CloudSystem when it wants to transition this cloud out
-    /// and eventually remove it.
-    /// </summary>
     public void BeginExit()
     {
         currentState = CloudPathState.Exiting;
     }
 
-    /// Debug / optional
     public virtual void Describe()
     {
         Debug.Log($"Cloud: Speed={movementSpeed}, Path={currentState}, usingSine={useSineWave}");
     }
 
+    private IEnumerator CheckFrustumLoop()
+    {
+        while (!hasEnteredFrustum)
+        {
+            if (IsInAnyFrustum())
+            {
+                Debug.Log("Entered Frustum");
+                hasEnteredFrustum = true;
+                Debug.Log("Setting visibility to 1.0f");
+                Renderer rend = GetComponent<Renderer>();
+                cloudMaterial = rend.material; // clones the material instance for this renderer
+                cloudMaterial.SetFloat("_CloudVisibility", 1.0f);
+                // cloudMaterial.SetFloat("_CloudVisibility", 1.0f);
+                // StartCoroutine(FadeVisibility(0f, 1f, 1.5f)); // fade in
+                float delay = Random.Range(10f, 20f);
+                // StartCoroutine(SelfDestructAfter(delay));
+            }
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
+    private IEnumerator SelfDestructAfter(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        yield return StartCoroutine(FadeVisibility(1f, 0f, 2f)); // fade out
+    }
+
+    private IEnumerator FadeVisibility(float start, float end, float duration)
+    {
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float v = Mathf.Lerp(start, end, t / duration);
+            if (cloudMaterial != null)
+                cloudMaterial.SetFloat("_CloudVisibility", v);
+            yield return null;
+        }
+        if (cloudMaterial != null)
+            cloudMaterial.SetFloat("_CloudVisibility", end);
+    }
+
     private bool IsInAnyFrustum()
     {
-        if (rend == null)
-            rend = GetComponent<Renderer>();
-
-        if (rend == null)
-            return false;
-
-        // Get all cameras named "Cam_Wall*"
+        if (rend == null) return false;
         Camera[] allCams = GameObject.FindObjectsOfType<Camera>();
         foreach (Camera cam in allCams)
         {
@@ -191,12 +194,9 @@ public class Cloud : MonoBehaviour
             {
                 Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cam);
                 if (GeometryUtility.TestPlanesAABB(planes, rend.bounds))
-                {
-                    return true; // visible in at least one wall cam
-                }
+                    return true;
             }
         }
-
-        return false; // not visible in any
+        return false;
     }
 }
