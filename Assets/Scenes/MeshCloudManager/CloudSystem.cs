@@ -81,6 +81,14 @@ public class CloudSystem : MonoBehaviour
         }
     }
 
+    public enum Wall
+    {
+        Left,
+        Right,
+        Front,
+        Back,
+    }
+
     /// spawns a single cloud in the allowed region (outer minus inner).
     private void SpawnCloud() // TODO: I think there should be an intro animation (e.g. "puff" as cloud emerges). 
     {
@@ -98,6 +106,14 @@ public class CloudSystem : MonoBehaviour
         Vector3 spawnPos = GetRandomPositionExcludingInner();
         newCloud.transform.position = spawnPos;
 
+        // determine which wall the cloud is closest to
+        Wall cloudWall = DetermineWall(spawnPos);
+        newCloud.transform.rotation = GetRotationForWall(cloudWall);
+        Debug.Log($"Cloud is on wall: {cloudWall}");
+
+        // store wall information
+        newCloud.wallSide = cloudWall;
+
         // parent the cloud to this system for tidiness
         newCloud.transform.SetParent(this.transform);
 
@@ -108,24 +124,43 @@ public class CloudSystem : MonoBehaviour
         cloudCollection.Add(newCloud);
     }
 
-    // private Vector3 GetRandomPositionExcludingInner()
-    // {
-    //     Vector3 halfOuter = outerSize / 2f;
+    private Wall DetermineWall(Vector3 position)
+    {
+        Vector3 halfOuter = outerSize / 2f;
+        
+        // calculate distance to each wall
+        float distToLeft = Mathf.Abs(position.x - (outerCenter.x - halfOuter.x));
+        float distToRight = Mathf.Abs(position.x - (outerCenter.x + halfOuter.x));
+        float distToBack = Mathf.Abs(position.z - (outerCenter.z - halfOuter.z));
+        float distToFront = Mathf.Abs(position.z - (outerCenter.z + halfOuter.z));
 
-    //     while (true)
-    //     {
-    //         // pick a random position within the outer bounding box
-    //         float x = Random.Range(outerCenter.x - halfOuter.x, outerCenter.x + halfOuter.x);
-    //         float y = Random.Range(outerCenter.y - halfOuter.y, outerCenter.y + halfOuter.y);
-    //         float z = Random.Range(outerCenter.z - halfOuter.z, outerCenter.z + halfOuter.z);
-    //         Vector3 candidate = new Vector3(x, startingY, z);
+        // find nearest wall by comparing distances
+        float minDist = Mathf.Min(distToLeft, distToRight, distToBack, distToFront);
 
-    //         if (!insideInner(candidate) && !insideCorner(candidate, 2.0f))
-    //         {
-    //             return candidate; // valid spawn point
-    //         }
-    //     }
-    // }
+        // return wall that matches the minimum distance
+        if (minDist == distToLeft) return Wall.Left;
+        else if (minDist == distToRight) return Wall.Right;
+        else if (minDist == distToBack) return Wall.Back;
+        return Wall.Front;
+    }
+
+    private Quaternion GetRotationForWall(Wall wall)
+    {
+        // set rotation so +z faces inward from the wall
+        switch (wall)
+        {
+            case Wall.Left:
+                return Quaternion.Euler(0, 90, 0);  // Rotate +z to face right
+            case Wall.Right:
+                return Quaternion.Euler(0, -90, 0); // Rotate +z to face left
+            case Wall.Front:
+                return Quaternion.Euler(0, 180, 0); // Rotate +z to face backward
+            case Wall.Back:
+                return Quaternion.Euler(0, 0, 0);   // Leave +z facing forward
+            default:
+                return Quaternion.identity;
+        }
+    }
 
     private Vector3 GetRandomPositionExcludingInner()
     {
