@@ -7,6 +7,9 @@ public class Cloud : MonoBehaviour
 
     private CloudPathState currentState;
 
+    // cloud wall
+    public CloudSystem.Wall wallSide;
+
     private Vector3 initialPosition;
     private Vector3 randomDirection; // For Rising
     private bool useSineWave;
