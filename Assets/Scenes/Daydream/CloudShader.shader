@@ -171,13 +171,35 @@ Shader "Custom/CloudShader"
                 return max(0.0, baseShape + noise * blend);
             }
             
+            // Calculate a boundary falloff factor to ensure clouds fade out at the edges
+            float calculateBoundaryFalloff(float3 p)
+            {
+                // Calculate distance from center as a percentage of the bounding box
+                // We use absolute values for each axis to create a box-shaped falloff
+                float3 absPos = abs(p);
+                
+                // Find the maximum component distance to create a box-shaped boundary
+                float maxDist = max(max(absPos.x, absPos.y), absPos.z);
+                
+                // Calculate how close we are to the edge (0 = at center, 1 = at edge)
+                // The 0.5 represents the normalized distance to the edge of the box
+                float edgeDistance = maxDist / 0.5;
+                
+                // Create a smooth falloff that starts at 0.8 of the distance to the edge
+                // This ensures clouds fade out before reaching the actual boundary
+                return smoothstep(1.0, 0.8, edgeDistance);
+            }
+            
             float scene(float3 p)
             {
                 float baseShape = calculateBaseShape(p);
                 float noiseValue = fbm(p);
                 float cloudShape = calculateCloudShape(baseShape, noiseValue);
-
-                return cloudShape * _CloudDensity;
+                
+                // Apply the boundary falloff to ensure clouds fade out at the edges
+                float boundaryFalloff = calculateBoundaryFalloff(p);
+                
+                return cloudShape * _CloudDensity * boundaryFalloff;
             }
 
             // Calculate cloud color at a specific point in the cloud
