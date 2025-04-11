@@ -7,10 +7,6 @@ public class CloudBridgeManager : MonoBehaviour
 {
     public AugmentaManager augmentaManager;
     public GameObject orbitingParticlePrefab;
-    public float spawnInterval = 15f;
-    public float effectLifetime = 15f;
-    public Vector2 spawnAreaMin = new Vector2(-10, -10);
-    public Vector2 spawnAreaMax = new Vector2(10, 10);
     public float detectionRadius = 1.5f;
     public Transform effectParent;
     public float orbitRadius = 1.5f;
@@ -32,38 +28,13 @@ public class CloudBridgeManager : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(SpawnParticlesRoutine());
-    }
-
-    IEnumerator SpawnParticlesRoutine()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(spawnInterval);
-            SpawnOrbitingParticles();
-            yield return new WaitForSeconds(effectLifetime);
-            Destroy(particleA);
-            Destroy(particleB);
-            if (bridgeEffect != null)
-            {
-                Destroy(bridgeEffect);
-                bridgeActive = false;
-            }
-        }
+        SpawnOrbitingParticles();
     }
 
     void SpawnOrbitingParticles()
     {
-        centerA = GetRandomPosition();
-
-        int maxAttempts = 20;
-        int attempts = 0;
-        do
-        {
-            centerB = GetRandomPosition();
-            attempts++;
-        } while (Vector3.Distance(centerA, centerB) < 2f && attempts < maxAttempts);
-
+        centerA = new Vector3(-4f, 450f, 0f); // manually set center
+        centerB = new Vector3(4f, 450f, 0f);  // manually set center
 
         particleA = Instantiate(orbitingParticlePrefab);
         particleB = Instantiate(orbitingParticlePrefab);
@@ -78,6 +49,7 @@ public class CloudBridgeManager : MonoBehaviour
         ApplyTintToParticle(particleB);
     }
 
+
     void ApplyTintToParticle(GameObject particle)
     {
         var ps = particle?.GetComponent<ParticleSystem>();
@@ -86,14 +58,6 @@ public class CloudBridgeManager : MonoBehaviour
             var main = ps.main;
             main.startColor = currentTint;
         }
-    }
-
-    Vector3 GetRandomPosition()
-    {
-        float x = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
-        float z = Random.Range(spawnAreaMin.y, spawnAreaMax.y);
-        float y = 450f;
-        return new Vector3(x, y, z);
     }
 
     void Update()
@@ -131,7 +95,6 @@ public class CloudBridgeManager : MonoBehaviour
 
         foreach (var obj in augmentaManager.augmentaObjects)
         {
-
             Vector3 pos = new Vector3(
                 obj.Value.worldPosition3D.x * 24.6f / 8.84f,
                 450f,
