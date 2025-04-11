@@ -274,6 +274,92 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0f6a9ca1c5f519c4a915444dc1505402, type: 3}
+--- !u!1 &244569635
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 244569637}
+  - component: {fileID: 244569636}
+  m_Layer: 0
+  m_Name: CloudBridgeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &244569636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 244569635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e61c9701aad04d95b7c02a9de279d5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  augmentaManager: {fileID: 2007777191}
+  orbitingParticlePrefab: {fileID: 9061664119830247179, guid: 83e5b352a9ae9415cba561b5ee6f2c53, type: 3}
+  spawnInterval: 10
+  effectLifetime: 60
+  spawnAreaMin: {x: -8, y: -8}
+  spawnAreaMax: {x: 8, y: 8}
+  detectionRadius: 1.5
+  effectParent: {fileID: 244569637}
+  orbitRadius: 1
+  orbitSpeed: 2
+  moveSpeed: 2.5
+  sun: {fileID: 1201540001}
+  sunColorGradient:
+    serializedVersion: 2
+    key0: {r: 0.6981132, g: 0.36619776, b: 0.1745283, a: 0.5882353}
+    key1: {r: 0.8490566, g: 0.6015321, b: 0.41251338, a: 1}
+    key2: {r: 0.8301887, g: 0.7200151, b: 0.57564974, a: 1}
+    key3: {r: 0.7264151, g: 0.7264151, b: 0.70928264, a: 1}
+    key4: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 0}
+    key5: {r: 0.9150943, g: 0.9150943, b: 0.9150943, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 2621
+    ctime2: 6554
+    ctime3: 32768
+    ctime4: 52428
+    ctime5: 65535
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 386
+    atime2: 6554
+    atime3: 65535
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 4
+--- !u!4 &244569637
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 244569635}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &280815574
 GameObject:
   m_ObjectHideFlags: 0
@@ -2324,7 +2410,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   augmentaManager: {fileID: 2007777191}
   cloudVolume: {fileID: 1721762337}
-  windSpeedMultiplier: 50
+  windSpeedMultiplier: 60
   smoothingAlpha: 0.4
   maxMovementPerSecond: 10
   maxWindSpeed: 300
@@ -3436,13 +3522,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1320751199}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0.5, y: -0.5, z: 0.5, w: 0.5}
   m_LocalPosition: {x: 1018.30884, y: 510, z: 1009.5158}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1508318807}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: -90, z: 0}
 --- !u!1 &1399135382
 GameObject:
   m_ObjectHideFlags: 0
@@ -4139,7 +4225,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 7bae5aad213fb48ba8e6f146ac0e5e5f, type: 3}
   m_Resource: {fileID: 8300000, guid: 7bae5aad213fb48ba8e6f146ac0e5e5f, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -5806,3 +5892,4 @@ SceneRoots:
   - {fileID: 1455107527}
   - {fileID: 1081566344}
   - {fileID: 1559633613}
+  - {fileID: 244569637}
