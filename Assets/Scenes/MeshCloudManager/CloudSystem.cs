@@ -104,7 +104,7 @@ public class CloudSystem : MonoBehaviour
         newCloud.transform.SetParent(this.transform);
 
         // initialize the cloud (assign materials, random movement, etc.)
-        newCloud.Initialize(spawnPos);
+        newCloud.Initialize(spawnPos, scale);
 
         // keep track of it
         cloudCollection.Add(newCloud);
@@ -180,10 +180,10 @@ public class CloudSystem : MonoBehaviour
         bool inTop = position.z > outerMax.z - (outerSize.z - innerSize.z) / 2f - margin;
         bool inBottom = position.z < outerMin.z + (outerSize.z - innerSize.z) / 2f + margin;
 
-        Debug.Log($"left side bounds: {outerMin.x}, {outerSize.x}, {innerSize.x}, {(outerSize.x - innerSize.x) / 2f}, {outerMin.x + (outerSize.x - innerSize.x) / 2f}");
-        Debug.Log($"right side bounds: {outerMax.x}, {outerSize.x}, {innerSize.x}, {(outerSize.x - innerSize.x) / 2f}, {outerMax.x - (outerSize.x - innerSize.x) / 2f}"); 
-        Debug.Log($"top side bounds: {outerMax.z}, {outerSize.z}, {innerSize.z}, {(outerSize.z - innerSize.z) / 2f}, {outerMax.z - (outerSize.z - innerSize.z) / 2f}");
-        Debug.Log($"bottom side bounds: {outerMin.z}, {outerSize.z}, {innerSize.z}, {(outerSize.z - innerSize.z) / 2f}, {outerMin.z + (outerSize.z - innerSize.z) / 2f}");
+        // Debug.Log($"left side bounds: {outerMin.x}, {outerSize.x}, {innerSize.x}, {(outerSize.x - innerSize.x) / 2f}, {outerMin.x + (outerSize.x - innerSize.x) / 2f}");
+        // Debug.Log($"right side bounds: {outerMax.x}, {outerSize.x}, {innerSize.x}, {(outerSize.x - innerSize.x) / 2f}, {outerMax.x - (outerSize.x - innerSize.x) / 2f}"); 
+        // Debug.Log($"top side bounds: {outerMax.z}, {outerSize.z}, {innerSize.z}, {(outerSize.z - innerSize.z) / 2f}, {outerMax.z - (outerSize.z - innerSize.z) / 2f}");
+        // Debug.Log($"bottom side bounds: {outerMin.z}, {outerSize.z}, {innerSize.z}, {(outerSize.z - innerSize.z) / 2f}, {outerMin.z + (outerSize.z - innerSize.z) / 2f}");
 
         bool isCorner =
             (inLeft && inTop) ||  // Top-left

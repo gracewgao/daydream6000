@@ -29,7 +29,7 @@ public class Cloud : MonoBehaviour
     /// Called by CloudSystem after instantiation.
     /// Now takes 'spawnPos' as argument.
     /// </summary>
-    public void Initialize(Vector3 spawnPos)
+    public void Initialize(Vector3 spawnPos, float scale)
     {
         // position & record
         transform.position = spawnPos;
@@ -42,6 +42,8 @@ public class Cloud : MonoBehaviour
             Renderer rend = GetComponent<Renderer>();
             if (rend != null) rend.material = cloudMaterial;
         }
+        // Debug.Log($"scale: {scale}");
+        cloudMaterial.SetFloat("_BoundingBoxSize", scale); // send the scale into the shader 
 
         // derive movement parameters from the position
         // e.g., distance from the center point.
@@ -59,7 +61,7 @@ public class Cloud : MonoBehaviour
         // spin speed scaled by distance
         spinSpeed = 20f; // or random within a range plus dist
 
-        Debug.Log($"SpawnPos={spawnPos}, dist={dist}, movementSpeed={movementSpeed}, spin={spinSpeed}");
+        // Debug.Log($"SpawnPos={spawnPos}, dist={dist}, movementSpeed={movementSpeed}, spin={spinSpeed}");
 
         // all clouds start in the "rising" state
         currentState = CloudPathState.Rising;
