@@ -2,7 +2,7 @@ This repository contains the code and documentation for Daydream, an interactive
 
 Relevant links:
 - [Final technical report and user manual](https://github.com/gracewgao/daydream6000/blob/main/Final%20Capstone%20Report%20-%20Daydream%20(Group%209).pdf)
-- [Final demo video](https://youtu.be/uRp_ARCzLU0).
+- [Final demo video](https://youtu.be/uRp_ARCzLU0)
 - [5-minute demo video](https://youtu.be/ePJAVo9ZCas)
 
 Group members:
